@@ -1,0 +1,12 @@
+# Not committed: papers, what is converted from them, every run, and what the install command puts inside the folder.
+local/
+workspaces/
+
+# Tool and system files
+.venv/
+__pycache__/
+.pytest_cache/
+.DS_Store
+
+# Working documents of the build tool
+.dryforge/

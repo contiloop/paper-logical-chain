@@ -1,0 +1,19 @@
+[project]
+name = "paper-chain-harness"
+version = "0.1.0"
+description = "Builds a logical chain of a research paper, section by section, with a reviewer after each section"
+requires-python = ">=3.12"
+license = "MIT"
+dependencies = [
+    "pillow>=10",
+    "pypdfium2>=4.30",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["scripts"]

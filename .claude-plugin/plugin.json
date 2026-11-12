@@ -1,0 +1,8 @@
+{
+  "name": "paper-logical-chain",
+  "description": "Builds the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback",
+  "author": { "name": "contiloop" },
+  "repository": "https://github.com/contiloop/paper-logical-chain",
+  "license": "MIT",
+  "keywords": ["research", "paper", "logical chain", "review"]
+}

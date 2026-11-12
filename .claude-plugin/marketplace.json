@@ -1,0 +1,12 @@
+{
+  "name": "paper-logical-chain",
+  "description": "The paper-logical-chain plugin, from its own repository",
+  "owner": { "name": "contiloop" },
+  "plugins": [
+    {
+      "name": "paper-logical-chain",
+      "source": "./",
+      "description": "Builds the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback"
+    }
+  ]
+}
