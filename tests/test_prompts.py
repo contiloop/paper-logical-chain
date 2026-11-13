@@ -132,7 +132,7 @@ HAND_BACK = [
     "Source: <workspace>/source/<input>/",
 ]
 
-# The four decisions the starter answers only with the person's own words.
+# The four decisions the starter answers only with the person's own words, in bold in each skill.
 PERSONS_DECISIONS = ["disagreement", "feedback", "acceptance", "reviewer's list of question kinds"]
 
 
@@ -150,7 +150,7 @@ def test_each_skill_holds_the_hand_back_lines_in_order(path):
 @pytest.mark.parametrize("path", SKILLS, ids=name)
 @pytest.mark.parametrize("term", PERSONS_DECISIONS)
 def test_each_skill_names_the_persons_decisions_to_the_starter(path, term):
-    assert term in starter_section(path).lower()
+    assert f"**{term}**" in starter_section(path).lower()
 
 
 def test_no_tracked_file_holds_the_old_package_name():

@@ -7,7 +7,7 @@ description: Build the logical chain of one research paper, section by section, 
 
 This file says only how a run is carried out in Claude Code: who starts whom and on which model, where the workspace is, how the scripts are run, and how the person is asked. Every rule of the work is under `prompts/` in the project folder, the folder that holds `prompts/` and `scripts/`, and none is repeated here. The project folder is the folder of this plugin, not the folder the session is open in.
 
-Two agents read this file. The agent of the session that loads this skill is the **starter**, whether the person started the skill or another skill that agent is running asked for it. The agent it starts to write the chain is the **author**.
+Two agents read this file. The session's own agent, the one in conversation with the person, is the **starter**, whether the person started the skill or another skill that agent is running asked for it. The agent it starts to write the chain is the **author**.
 
 - Why the session's agent and never a started agent: a started agent cannot reach the person, so the person's decisions would pass through the agent that started it.
 

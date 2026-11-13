@@ -7,7 +7,7 @@ description: Build the logical chain of one research paper, section by section, 
 
 This file says only how a run is carried out in Codex: who starts whom and on which model, where the workspace is, how the scripts are run, and how the person is asked. Every rule of the work is under `prompts/` in the project folder, the folder that holds `prompts/` and `scripts/`, and none is repeated here. The project folder is the folder three levels above this file, which is `.agents/skills/paper-chain/SKILL.md` in it, and not the folder the session is open in.
 
-Two agents read this file. The agent of the session that loads this skill is the **starter**, whether the person started the skill or another skill that agent is running asked for it. The agent it starts to write the chain is the **author**.
+Two agents read this file. The session's own agent, the one in conversation with the person, is the **starter**, whether the person started the skill or another skill that agent is running asked for it. The agent it starts to write the chain is the **author**.
 
 - Why the session's agent and never a started agent: a started agent cannot reach the person, so the person's decisions would pass through the agent that started it.
 
@@ -79,7 +79,7 @@ Check, whenever `prompts/roles/author.md` says to run the check script:
 
 It writes `check-report.md` in the workspace. Exit code 0 is pass and 1 is fail.
 
-**Asking for a reviewer.** End your reply with these five lines, with absolute paths, and stop. The starter starts the reviewer, though you could: that way the person is shown what your reply holds while the review runs. You are continued with the reviewer's reply, which is its verdict and the number of issues; the review is in the file.
+**Asking for a reviewer.** End your reply with these five lines, with absolute paths, and stop. The starter starts the reviewer, though you could: that way the person is shown what your reply holds while the review runs, and Claude Code and Codex run the same graph. You are continued with the reviewer's reply, which is its verdict and the number of issues; the review is in the file.
 
 ```
 Reviewer role file: <project folder>/prompts/roles/reviewer.md
