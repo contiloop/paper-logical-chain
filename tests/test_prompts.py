@@ -122,3 +122,19 @@ def test_codex_finds_only_its_own_skill():
     found = skill_files(ROOT, [read_json(CODEX_PLUGIN)["skills"]])
     assert found == [CODEX_SKILL]
 
+
+
+def test_no_tracked_file_holds_the_old_package_name():
+    """The package took the name of the repository, the plugin and the marketplace."""
+    import subprocess
+
+    old_name = "paper-chain-" + "harness"
+    tracked = subprocess.run(
+        ["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=True
+    ).stdout.decode("utf-8").split("\0")
+    holding = [
+        name for name in tracked
+        if name and (ROOT / name).is_file()
+        and old_name in (ROOT / name).read_text(encoding="utf-8", errors="ignore")
+    ]
+    assert holding == []
