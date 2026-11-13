@@ -30,7 +30,7 @@ You write nothing of the chain and read nothing of the paper. You start agents a
    Paper: <the folder of LaTeX source, its main .tex file, or the PDF>
    Input name: <input>
    Workspace: <workspace>
-   Chain language: <the language the person asked for the chain in; leave this line out when they asked for none>
+   Chain language: <the language asked for the chain in; leave this line out when none was asked for>
    Another agent started you.
    ```
 
