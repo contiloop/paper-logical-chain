@@ -28,6 +28,25 @@ Open Claude Code or Codex in the folder where the run's files should go, start t
 
 In Codex the first run asks to run `uv sync` in the plugin's folder outside the sandbox, once for each version of the plugin: it writes there and downloads packages, which the sandbox does not allow.
 
+## Calling it from another orchestrator
+
+A pipeline that goes on from the chain, to a script or a video, runs this stage by having its own skill ask for `paper-chain` in the same session: `paper-logical-chain:paper-chain` in Claude Code, the skill `paper-chain` of the plugin `paper-logical-chain` in Codex, which takes LaTeX source only. The session's own agent then runs the stage. A started agent cannot, because it cannot reach the person.
+
+The orchestrator's instructions may give the paper, the workspace, the input name (the first author's family name and the year, such as `lee2024`) and the chain's language. Four decisions stay with the person and are answered only in their own words: whether a run goes on after a **disagreement** in conversion, each round of **feedback**, **acceptance** of the chain, and each addition to the **reviewer's list of question kinds**.
+
+When the person accepts the chain, the stage ends with these lines, with absolute paths:
+
+```
+Chain accepted.
+Workspace: <workspace>
+Chain: <workspace>/logical-chain.md
+Source: <workspace>/source/<input>/
+```
+
+The person can give feedback after accepting, which starts a new round; the latest such lines are the ones that count. The `Chain:` line of `review-log.md` says how far a run has got, but it can still read `accepted` during that new round.
+
+What the next stage reads is defined in `prompts/`: the workspace in `prompts/work-graph.md`, the chain in `prompts/formats/logical-chain.md`, the converted paper in `prompts/formats/source.md`. Each step links the place in the paper it rests on as `source/<input>/paper.md#<anchor>`, relative to the workspace.
+
 ## Develop
 
 ```

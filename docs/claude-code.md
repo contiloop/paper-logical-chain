@@ -10,15 +10,19 @@ It holds no rule, format or role text. An instruction that stands in the skill a
 
 ## Who runs what
 
-The agent of the session in which the person starts the skill is the starter. It writes nothing of the chain and reads nothing of the paper. It starts the author as a new agent, starts each reviewer when the author asks for one, for a PDF starts the transcriber the same way, and carries the person's answers to the author.
+The session's own agent, the one in conversation with the person, is the starter. It writes nothing of the chain and reads nothing of the paper. It starts the author as a new agent, starts each reviewer when the author asks for one, for a PDF starts the transcriber the same way, and carries the person's answers to the author.
 
 - **Why the author is a started agent.** The person chose the model `opus` at the effort `high` for every agent of a run. A model set in a skill's frontmatter holds for the current turn only, and the session's own model returns with the next prompt, so the session's agent cannot be the author on a fixed model across a run of many turns. A started agent keeps the model it was started on.
-- **Why the starter passes nothing but the fixed messages.** The author is started with the skill file, the project folder, the paper, the input's name, the workspace, the chain's language when the person asked for one, and the line that another agent started it. A reviewer is started with the five lines the author ends its reply with. The starter continues the author with the reviewer's reply, or the person's answer, and nothing else. The starter may know things the author must not, such as an answer key in a test, and the reviewer must not have the author's view.
+- **Why the starter passes nothing but the fixed messages.** The author is started with the skill file, the project folder, the paper, the input's name, the workspace, the chain's language when one was asked for, and the line that another agent started it. A reviewer is started with the five lines the author ends its reply with. The starter continues the author with the reviewer's reply, or the person's answer, and nothing else. The starter may know things the author must not, such as an answer key in a test, and the reviewer must not have the author's view.
 - **Never a fork.** A fork inherits the conversation of the agent that starts it.
 - **The author waits for each reviewer.** Each section's steps build on reviewed steps, so nothing is written while a review runs.
 - **A reviewer's reply is its verdict and a count.** The review reaches the author as a file, which keeps the author's context, the longest in a run, from filling with reviews.
 
 A run that stops is resumed by starting a new author on the same workspace.
+
+## Started by another skill
+
+The person can start the skill, or another skill the session's agent is running can ask for it; either way the session's agent loads it and is the starter. A started agent cannot be: it cannot reach the person, so the person's decisions would pass through the agent that started it. The other skill's instructions may give the paper, the workspace, the input name and the chain language. Four answers stay the person's, taken only from their own words: going on after a disagreement in conversion, each round of feedback, acceptance, and each addition to the reviewer's list of question kinds. Once the person has accepted and `review-log.md` reads `Chain: accepted`, the starter ends its reply with four lines, `Chain accepted.` and the absolute paths of the workspace, the chain and `source/<input>/`, and the other skill may go on from them. The starter reads that one line because `prompts/roles/author.md` gives the author no reply on acceptance.
 
 ## Where the files are, installed
 
