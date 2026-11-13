@@ -123,7 +123,6 @@ def test_codex_finds_only_its_own_skill():
     assert found == [CODEX_SKILL]
 
 
-
 # The lines the starter ends the chain stage with once review-log.md reads `Chain: accepted`,
 # so that a skill that asked for the chain can go on from them.
 HAND_BACK = [
@@ -152,3 +151,19 @@ def test_each_skill_holds_the_hand_back_lines_in_order(path):
 @pytest.mark.parametrize("term", PERSONS_DECISIONS)
 def test_each_skill_names_the_persons_decisions_to_the_starter(path, term):
     assert term in starter_section(path).lower()
+
+
+def test_no_tracked_file_holds_the_old_package_name():
+    """The package took the name of the repository, the plugin and the marketplace."""
+    import subprocess
+
+    old_name = "paper-chain-" + "harness"
+    tracked = subprocess.run(
+        ["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=True
+    ).stdout.decode("utf-8").split("\0")
+    holding = [
+        name for name in tracked
+        if name and (ROOT / name).is_file()
+        and old_name in (ROOT / name).read_text(encoding="utf-8", errors="ignore")
+    ]
+    assert holding == []
