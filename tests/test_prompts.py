@@ -122,3 +122,33 @@ def test_codex_finds_only_its_own_skill():
     found = skill_files(ROOT, [read_json(CODEX_PLUGIN)["skills"]])
     assert found == [CODEX_SKILL]
 
+
+
+# The lines the starter ends the chain stage with once review-log.md reads `Chain: accepted`,
+# so that a skill that asked for the chain can go on from them.
+HAND_BACK = [
+    "Chain accepted.",
+    "Workspace: <workspace>",
+    "Chain: <workspace>/logical-chain.md",
+    "Source: <workspace>/source/<input>/",
+]
+
+# The four decisions the starter answers only with the person's own words.
+PERSONS_DECISIONS = ["disagreement", "feedback", "acceptance", "reviewer's list of question kinds"]
+
+
+def starter_section(path: Path) -> str:
+    text = path.read_text(encoding="utf-8")
+    return text.split("## The starter", 1)[1].split("\n## ", 1)[0]
+
+
+@pytest.mark.parametrize("path", SKILLS, ids=name)
+def test_each_skill_holds_the_hand_back_lines_in_order(path):
+    lines = [line.strip() for line in starter_section(path).splitlines()]
+    assert any(lines[i : i + len(HAND_BACK)] == HAND_BACK for i in range(len(lines)))
+
+
+@pytest.mark.parametrize("path", SKILLS, ids=name)
+@pytest.mark.parametrize("term", PERSONS_DECISIONS)
+def test_each_skill_names_the_persons_decisions_to_the_starter(path, term):
+    assert term in starter_section(path).lower()

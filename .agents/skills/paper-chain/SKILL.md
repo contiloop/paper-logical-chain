@@ -1,13 +1,15 @@
 ---
 name: paper-chain
-description: Build the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback. Use when the person gives a paper (a folder of LaTeX source) and asks for its logical chain, or asks to go on with a run in an existing workspace.
+description: Build the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback. Use when the person, or another skill this session is running, gives a paper (a folder of LaTeX source) and asks for its logical chain, or asks to go on with a run in an existing workspace.
 ---
 
 # Paper chain
 
 This file says only how a run is carried out in Codex: who starts whom and on which model, where the workspace is, how the scripts are run, and how the person is asked. Every rule of the work is under `prompts/` in the project folder, the folder that holds `prompts/` and `scripts/`, and none is repeated here. The project folder is the folder three levels above this file, which is `.agents/skills/paper-chain/SKILL.md` in it, and not the folder the session is open in.
 
-Two agents read this file. The agent of the session in which the person started the skill is the **starter**. The agent it starts to write the chain is the **author**.
+Two agents read this file. The agent of the session that loads this skill is the **starter**, whether the person started the skill or another skill that agent is running asked for it. The agent it starts to write the chain is the **author**.
+
+- Why the session's agent and never a started agent: a started agent cannot reach the person, so the person's decisions would pass through the agent that started it.
 
 ## Models
 
@@ -19,8 +21,8 @@ Every agent of a run is on the model and reasoning effort the person chose for t
 
 You write nothing of the chain and read nothing of the paper. You start agents and pass messages.
 
-1. **The paper.** A run in Codex takes the paper's LaTeX source only. If the person gives a PDF, tell them so, and that Claude Code can run from a PDF: the transcriber must read the PDF itself, and no tool of Codex reads a PDF.
-2. **The workspace.** It is the folder the person names. If they name none, make `workspaces/<the paper's subject in full words>/` in the folder this session is open in, with the subject as the person gave it; ask if they did not. `<input>` is the first author's family name and the year, such as `lee2024`; take it from the person, and ask if they did not give it.
+1. **The paper.** A run in Codex takes the paper's LaTeX source only. If the paper is a PDF, tell the person so, and that Claude Code can run from a PDF: the transcriber must read the PDF itself, and no tool of Codex reads a PDF.
+2. **The workspace.** The paper, the workspace, `<input>` and the chain language come from the person or from the instructions of the skill that asked for this one; ask the person only for what neither gave. The workspace is the folder named. If none is named, make `workspaces/<the paper's subject in full words>/` in the folder this session is open in, with the subject as given; ask if it was not. `<input>` is the first author's family name and the year, such as `lee2024`.
 3. **The scripts' Python.** If the project folder has no `.venv/`, run `uv sync` in the project folder, outside the sandbox: it writes in the project folder and downloads packages, and the sandbox allows neither.
 4. **Start the author** with `spawn_agent`: `fork_turns` `"none"`, the model as above, no `agent_type`, and as `message` these lines and nothing else, with absolute paths:
 
@@ -38,6 +40,18 @@ You write nothing of the chain and read nothing of the paper. You start agents a
 5. **When the author's reply ends with the lines for a reviewer**, start a reviewer with `spawn_agent` the same way, with exactly those lines as its `message`. What the reply holds for the person above those lines, show the person, and do not wait for their answer: an answer that comes while an agent runs goes to the author after that agent's reply. Wait for the reviewer's final answer, and give it to the author with `followup_task` and nothing else.
    - Why `fork_turns` `"none"` at every start: its default gives the new agent your whole conversation, and a reviewer must not have the author's view, nor the author yours.
 6. **When the author's reply ends with something for the person**, show it to the person and end your turn. Give the author their answer as they gave it, with `followup_task`.
+
+   Four decisions are the person's: whether the run goes on after the conversion reports a **disagreement**, every round of **feedback** on the chain, the **acceptance** of the chain, and every addition to the **reviewer's list of question kinds**. Answer the author on them only with the person's own words in this conversation: never from the instructions of the skill that asked for this one, even where they say how to answer, and never from your own judgment.
+7. **When the chain is accepted.** After you have given the person's acceptance to the author and the author has replied, read the `Chain:` line of `<workspace>/review-log.md`. If it reads `Chain: accepted`, end your reply in the conversation with these four lines, with absolute paths, filled from the workspace and the input name you started the author with. They end the chain stage: the skill that asked for this one, if any, may go on from them, and nothing of this skill follows them. Write them at no other point.
+
+   ```
+   Chain accepted.
+   Workspace: <workspace>
+   Chain: <workspace>/logical-chain.md
+   Source: <workspace>/source/<input>/
+   ```
+
+   - Why the recorded line and not the author's reply: `prompts/roles/author.md` gives the author no reply on acceptance. Reading that one line is not reading the paper or the chain.
 
 ## The author
 
