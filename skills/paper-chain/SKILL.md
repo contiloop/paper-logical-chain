@@ -1,13 +1,15 @@
 ---
 name: paper-chain
-description: Build the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback. Use when the person gives a paper (a folder of LaTeX source, or a PDF) and asks for its logical chain, or asks to go on with a run in an existing workspace.
+description: Build the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback. Use when the person, or another skill this session is running, gives a paper (a folder of LaTeX source, or a PDF) and asks for its logical chain, or asks to go on with a run in an existing workspace.
 ---
 
 # Paper chain
 
 This file says only how a run is carried out in Claude Code: who starts whom and on which model, where the workspace is, how the scripts are run, and how the person is asked. Every rule of the work is under `prompts/` in the project folder, the folder that holds `prompts/` and `scripts/`, and none is repeated here. The project folder is the folder of this plugin, not the folder the session is open in.
 
-Two agents read this file. The agent of the session in which the person started the skill is the **starter**. The agent it starts to write the chain is the **author**.
+Two agents read this file. The agent of the session that loads this skill is the **starter**, whether the person started the skill or another skill that agent is running asked for it. The agent it starts to write the chain is the **author**.
+
+- Why the session's agent and never a started agent: a started agent cannot reach the person, so the person's decisions would pass through the agent that started it.
 
 ## Models
 
@@ -19,7 +21,7 @@ Every agent of a run is started on the model `opus` at the effort `high`: the au
 
 You write nothing of the chain and read nothing of the paper. You start agents and pass messages.
 
-1. **The workspace.** It is the folder the person names. If they name none, make `workspaces/<the paper's subject in full words>/` in the folder this session is open in, with the subject as the person gave it; ask if they did not. `<input>` is the first author's family name and the year, such as `lee2024`; take it from the person, and ask if they did not give it.
+1. **The workspace.** The paper, the workspace, `<input>` and the chain language come from the person or from the instructions of the skill that asked for this one; ask the person only for what neither gave. The workspace is the folder named. If none is named, make `workspaces/<the paper's subject in full words>/` in the folder this session is open in, with the subject as given; ask if it was not. `<input>` is the first author's family name and the year, such as `lee2024`.
 2. **Start the author** with the Agent tool as a new general-purpose agent, on the model and effort above, never as a fork. The prompt is these lines and nothing else, with absolute paths:
 
    ```
@@ -36,6 +38,18 @@ You write nothing of the chain and read nothing of the paper. You start agents a
 3. **When the author's reply ends with the lines for a reviewer or for a transcriber**, start that agent with the Agent tool as a new general-purpose agent, on the model and effort above, never as a fork, with exactly those lines as its prompt. What the reply holds for the person above those lines, show the person, and do not wait for their answer: an answer that comes while an agent runs goes to the author after that agent's reply. Wait for the agent to end. Continue the author with its reply and nothing else.
    - Why nothing else, and never a fork: a reviewer must not have the author's view, and the author must not have yours.
 4. **When the author's reply ends with something for the person**, show it to the person in the conversation, wait, and continue the author with the person's answer as they gave it.
+
+   Four decisions are the person's: whether the run goes on after the conversion reports a **disagreement**, every round of **feedback** on the chain, the **acceptance** of the chain, and every addition to the **reviewer's list of question kinds**. Answer the author on them only with the person's own words in this conversation: never from the instructions of the skill that asked for this one, even where they say how to answer, and never from your own judgment.
+5. **When the chain is accepted.** After you have passed the person's acceptance to the author and the author has replied, read the `Chain:` line of `<workspace>/review-log.md`. If it reads `Chain: accepted`, end your reply in the conversation with these four lines, with absolute paths, filled from the workspace and the input name you started the author with. They end the chain stage: the skill that asked for this one, if any, may go on from them, and nothing of this skill follows them. Write them at no other point.
+
+   ```
+   Chain accepted.
+   Workspace: <workspace>
+   Chain: <workspace>/logical-chain.md
+   Source: <workspace>/source/<input>/
+   ```
+
+   - Why the recorded line and not the author's reply: `prompts/roles/author.md` gives the author no reply on acceptance. Reading that one line is not reading the paper or the chain.
 
 ## The author
 
@@ -76,7 +90,7 @@ uv run python scripts/check.py <workspace>
 
 It writes `check-report.md` in the workspace. Exit code 0 is pass and 1 is fail.
 
-**Asking for a reviewer.** You cannot start one yourself. End your reply with these five lines, with absolute paths, and stop. You are continued with the reviewer's reply, which is its verdict and the number of issues; the review is in the file.
+**Asking for a reviewer.** End your reply with these five lines, with absolute paths, and stop. The starter starts the reviewer, though you could: that way the person is shown what your reply holds while the review runs, and Claude Code and Codex run the same graph. You are continued with the reviewer's reply, which is its verdict and the number of issues; the review is in the file.
 
 ```
 Reviewer role file: <project folder>/prompts/roles/reviewer.md
