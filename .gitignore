@@ -1,5 +1,5 @@
 # Not committed: papers, what is converted from them, every run, and what the install command puts inside the folder.
-local/
+local
 workspaces/
 
 # Tool and system files
