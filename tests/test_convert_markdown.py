@@ -102,6 +102,33 @@ def test_parts_are_tested_for_numbers_section_by_section(tmp_path):
     assert headings(result.document) == [(1, "1", "A"), (2, "1.1", "X"), (2, "1.2", "Y"), (1, "2", "B"), (2, "2.1", "Z")]
 
 
+def test_parts_whose_numbers_do_not_begin_with_the_sections_number_are_numbered_under_it(tmp_path):
+    text = "## A\n\n### 1. X\n\nx.\n\n## B\n\n### 1. Y\n\ny.\n"
+    result, paper_md, index = run(tmp_path, text)
+    assert headings(result.document) == [(1, "1", "A"), (2, "1.1", "1. X"), (1, "2", "B"), (2, "2.1", "1. Y")]
+    assert '<a id="s1.1-p1"></a>\nx.' in paper_md and '<a id="s2.1-p1"></a>\ny.' in paper_md
+    assert "- [§1.1 ¶1](paper.md#s1.1-p1) x." in index and "- [§2.1 ¶1](paper.md#s2.1-p1) y." in index
+
+
+def test_numbered_korean_parts_give_distinct_locations(tmp_path):
+    text = "## 배경\n\n가.\n\n### 1. 첫째\n\n나.\n\n### 2. 둘째\n\n다.\n\n## 결과\n\n라.\n\n### 1. 셋째\n\n마.\n"
+    result, paper_md, index = run(tmp_path, text)
+    assert headings(result.document) == [
+        (1, "1", "배경"), (2, "1.1", "1. 첫째"), (2, "1.2", "2. 둘째"), (1, "2", "결과"), (2, "2.1", "1. 셋째"),
+    ]
+    locations = re.findall(r"^- \[(§[^\]]+)\]", index, re.MULTILINE)
+    assert locations == ["§1 ¶1", "§1.1 ¶1", "§1.2 ¶1", "§2 ¶1", "§2.1 ¶1"]
+    anchors = ANCHOR.findall(paper_md)
+    assert len(anchors) == len(set(anchors))
+
+
+def test_parts_numbered_under_a_numbered_section_keep_their_numbers(tmp_path):
+    text = "## 3 C\n\nc.\n\n### 3.1 D\n\nd.\n\n### 3.2 E\n\ne.\n\n## 4 F\n\nf.\n"
+    result, _, index = run(tmp_path, text)
+    assert headings(result.document) == [(1, "3", "C"), (2, "3.1", "D"), (2, "3.2", "E"), (1, "4", "F")]
+    assert "- [§3.2 ¶1](paper.md#s3.2-p1) e." in index
+
+
 def test_korean_headings_give_numbered_locations_and_anchors(tmp_path):
     text = "# 제목\n\n## 연초 예측\n\n첫 문단.\n\n둘째 문단.\n\n## 2024년 결과\n\n셋째.\n"
     result, paper_md, index = run(tmp_path, text)
@@ -252,6 +279,12 @@ def test_an_image_inside_running_text_is_a_figure_inside_the_paragraph(tmp_path)
     assert "![tiny](box.png) after." in paragraph
 
 
+def test_an_image_inside_running_text_keeps_its_paragraph_one_block(tmp_path):
+    _, paper_md, _ = run(tmp_path, "## A\n\nBefore ![tiny](box.png) after.\n\nNext.\n", files={"box.png": ""})
+    paragraph = paper_md.split('<a id="s1-p1"></a>\n', 1)[1].split('<a id="s1-p2"></a>', 1)[0]
+    assert "\n\n" not in paragraph.strip()
+
+
 def test_several_images_in_one_paragraph_are_figures_inside_it(tmp_path):
     text = "## A\n\n![one](a.png) ![two](b.png)\n"
     result, _, index = run(tmp_path, text, files={"a.png": "", "b.png": ""})
@@ -292,8 +325,16 @@ def test_a_missing_local_image_is_a_disagreement(tmp_path, capsys):
     assert convert.main([str(folder / "post.md"), "post2026", str(tmp_path / "ws")]) == 1
     out = capsys.readouterr().out
     assert "Disagreements: 1\n" in out and "images/gone.png" in out and "not found" in out
+    assert "figure-source-order-1" in out
     paper_md = (tmp_path / "ws/source/post2026/paper.md").read_text(encoding="utf-8")
     assert '<a id="figure-source-order-1"></a>\n![gone](images/gone.png)\n*Caption.*' in paper_md
+
+
+def test_two_uses_of_one_missing_image_are_told_apart_by_their_anchors(tmp_path):
+    result, _, _ = run(tmp_path, "## A\n\n![one](gone.png)\n\n![two](gone.png)\n")
+    first, second = result.report.disagreements
+    assert "gone.png" in first and "figure-source-order-1" in first
+    assert "gone.png" in second and "figure-source-order-2" in second
 
 
 def test_an_image_that_cannot_be_made_into_a_png_is_a_disagreement(tmp_path):
@@ -365,6 +406,7 @@ def test_a_download_that_returns_html_is_one_disagreement(tmp_path, server):
     result, paper_md, _ = run(tmp_path, text)
     assert len(result.report.disagreements) == 1
     assert f"{server.url}/login" in result.report.disagreements[0]
+    assert "figure-source-order-1" in result.report.disagreements[0]
     assert '<a id="figure-source-order-1"></a>\n![chart]' in paper_md and "*Caption.*" in paper_md
 
 

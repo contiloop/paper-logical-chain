@@ -67,7 +67,7 @@ Convert, once, before you read anything of the text. A workspace that already ha
 .venv/bin/python scripts/convert.py <folder of LaTeX source, its main .tex file, or the Markdown file> <input> <workspace> [--support <folder>]
 ```
 
-`--support` names a second folder that holds files the main file includes, such as its figures, when they are not beside it.
+`--support` names a second folder that holds files the main file includes, such as its figures or a Markdown file's images, when they are not beside it.
 
 - Exit code 0: converted, no disagreement.
 - Exit code 1: converted, with one or more disagreements, each printed on a line. Stop, and have the person shown those lines and asked whether to go on. Read nothing in `source/` until they answer.
