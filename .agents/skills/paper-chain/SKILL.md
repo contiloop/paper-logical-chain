@@ -1,6 +1,6 @@
 ---
 name: paper-chain
-description: Build the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback. Use when the person, or another skill this session is running, gives a paper (a folder of LaTeX source) and asks for its logical chain, or asks to go on with a run in an existing workspace.
+description: Build the logical chain of one research paper or blog post, one line of its spine at a time, with a fresh reviewer after each line, a final review, and the person's feedback. Use when the person, or another skill this session is running, gives a paper or a post (a folder of LaTeX source, or a Markdown file) and asks for its logical chain, or asks to go on with a run in an existing workspace.
 ---
 
 # Paper chain
@@ -19,17 +19,17 @@ Every agent of a run is on the model and reasoning effort the person chose for t
 
 ## The starter
 
-You write nothing of the chain and read nothing of the paper. You start agents and pass messages.
+You write nothing of the chain and read nothing of the text. You start agents and pass messages.
 
-1. **The paper.** A run in Codex takes the paper's LaTeX source only. If the paper is a PDF, tell the person so, and that Claude Code can run from a PDF: the transcriber must read the PDF itself, and no tool of Codex reads a PDF.
-2. **The workspace.** The paper, the workspace, `<input>` and the chain language come from the person or from the instructions of the skill that asked for this one; ask the person only for what neither gave. The workspace is the folder named. If none is named, make `workspaces/<the paper's subject in full words>/` in the folder this session is open in, with the subject as given; ask if it was not. `<input>` is the first author's family name and the year, such as `lee2024`.
-3. **The scripts' Python.** If the project folder has no `.venv/`, run `uv sync` in the project folder, outside the sandbox: it writes in the project folder and downloads packages, and the sandbox allows neither.
+1. **The text.** A run in Codex takes LaTeX source or a Markdown file. If the text is a PDF, tell the person so, and that Claude Code can run from a PDF: the transcriber must read the PDF itself, and no tool of Codex reads a PDF.
+2. **The workspace.** The paper, the workspace, `<input>` and the chain language come from the person or from the instructions of the skill that asked for this one; ask the person only for what neither gave. The workspace is the folder named. If none is named, make `workspaces/<the text's subject in full words>/` in the folder this session is open in, with the subject as given; ask if it was not. `<input>` is the first author's family name and the year, such as `lee2024`; for a text whose author is not named, a short word for it and the year, such as `post2026`.
+3. **The scripts' Python.** If the project folder has no `.venv/`, or `.venv/bin/python -c "import markdown_it"` fails there, run `uv sync` in the project folder, outside the sandbox: it writes in the project folder and downloads packages, and the sandbox allows neither. An environment made by an earlier version of the plugin lacks the Markdown parser, and `convert.py` would then fail with an import error.
 4. **Start the author** with `spawn_agent`: `fork_turns` `"none"`, the model as above, no `agent_type`, and as `message` these lines and nothing else, with absolute paths:
 
    ```
    Skill file: <this file>
    Project folder: <the project folder>
-   Paper: <the folder of LaTeX source, or its main .tex file>
+   Paper: <the folder of LaTeX source, its main .tex file, or the Markdown file>
    Input name: <input>
    Workspace: <workspace>
    Chain language: <the language asked for the chain in; leave this line out when none was asked for>
@@ -53,7 +53,7 @@ You write nothing of the chain and read nothing of the paper. You start agents a
    Source: <workspace>/source/<input>/
    ```
 
-   - Why the recorded line and not the author's reply: `prompts/roles/author.md` gives the author no reply on acceptance. Reading that one line is not reading the paper or the chain.
+   - Why the recorded line and not the author's reply: `prompts/roles/author.md` gives the author no reply on acceptance. Reading that one line is not reading the text or the chain.
 
 ## The author
 
@@ -61,10 +61,10 @@ You are the author of this run. The project folder is the one on your line `Proj
 
 **Running the scripts.** Run both from the project folder with the project's own Python, `.venv/bin/python`, which the starter has made. Codex's sandbox stops `uv run`, which needs uv's cache outside the project folder.
 
-Convert, once, before you read anything of the paper. A workspace that already has a `review-log.md` is a run to go on with: do not convert again.
+Convert, once, before you read anything of the text. A workspace that already has a `review-log.md` is a run to go on with: do not convert again.
 
 ```
-.venv/bin/python scripts/convert.py <folder of LaTeX source, or its main .tex file> <input> <workspace> [--support <folder>]
+.venv/bin/python scripts/convert.py <folder of LaTeX source, its main .tex file, or the Markdown file> <input> <workspace> [--support <folder>]
 ```
 
 `--support` names a second folder that holds files the main file includes, such as its figures, when they are not beside it.

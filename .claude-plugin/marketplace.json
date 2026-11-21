@@ -6,7 +6,7 @@
     {
       "name": "paper-logical-chain",
       "source": "./",
-      "description": "Builds the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback"
+      "description": "Builds the logical chain of one research paper or blog post, one line of its spine at a time, with a fresh reviewer after each line, a final review, and the person's feedback"
     }
   ]
 }

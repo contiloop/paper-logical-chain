@@ -1,11 +1,11 @@
 # Format: source/&lt;input&gt;/
 
-The paper, converted, in `source/<input>/` of the workspace, where `<input>` is the first author and the year, such as `lee2024`. The author and the reviewers read it in place of the paper. From LaTeX source the convert script writes all of it. From a PDF the transcriber writes `paper.md` and the script writes the rest.
+The text, converted, in `source/<input>/` of the workspace, where `<input>` is named as `prompts/work-graph.md` says. The author and the reviewers read it in place of the original. From LaTeX source or a Markdown file the convert script writes all of it. From a PDF the transcriber writes `paper.md` and the script writes the rest.
 
 ## Files
 
-- `paper.md`: the whole paper in its order, with an anchor on every paragraph and on every item. Items are statements (theorem, lemma, assumption and the like), numbered equations, figures, tables, algorithms and reference-list entries. From LaTeX source the text is the LaTeX as written, with included files in place and comments removed; the paper's macros are defined under `## Preamble`. From a PDF it is a transcription of the pages, with the mathematics in LaTeX.
-- `paragraphs.md`: one row for each paragraph and each item, in the paper's order, each a location linked to its anchor in `paper.md`. A row set in under another is an item inside that paragraph or item.
+- `paper.md`: the whole text in its order, with an anchor on every paragraph and on every item. Items are statements (theorem, lemma, assumption and the like), numbered equations, figures, tables, algorithms and reference-list entries. From LaTeX source the text is the LaTeX as written, with included files in place and comments removed; the paper's macros are defined under `## Preamble`. From a PDF it is a transcription of the pages, with the mathematics in LaTeX.
+- `paragraphs.md`: one row for each paragraph and each item, in the text's order, each a location linked to its anchor in `paper.md`. A row set in under another is an item inside that paragraph or item.
 - `figures/`: an image of every figure, named after its anchor, such as `fig-delay.png` for `fig:delay`. From a PDF the image holds the caption too.
 - `tables/`, from a PDF only: an image of every table with its caption, such as `table-2.png`.
 - `pages/`, from a PDF only: an image of every page of the file. `page-003.png` is the third.
@@ -18,7 +18,7 @@ Which image to open:
 
 ## Locations
 
-A location is text that a reader of the paper can follow, written as a link to the anchor of what it names. From a file at the top of the workspace the target is `source/<input>/paper.md#<anchor>`.
+A location is text that a reader of the text can follow, written as a link to the anchor of what it names. From a file at the top of the workspace the target is `source/<input>/paper.md#<anchor>`.
 
 A paragraph's location and anchor are those of its row in `paragraphs.md`.
 

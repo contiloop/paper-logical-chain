@@ -202,3 +202,14 @@ def test_no_instruction_has_a_no_steps_state(path):
 def test_each_skill_names_the_kinds_of_review(path):
     kinds = "a spine review, a review of a spine line, a second look, or the final review"
     assert f"Kind of review: <{kinds}>" in path.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("path", SKILLS, ids=name)
+def test_each_skill_description_names_markdown(path):
+    """A person or an orchestrator that has a Markdown file must find the skill by its description."""
+    description = path.read_text(encoding="utf-8").split("description:", 1)[1].split("\n", 1)[0]
+    assert "Markdown" in description
+
+
+def test_the_codex_skill_takes_markdown_as_well_as_latex():
+    assert "LaTeX source only" not in CODEX_SKILL.read_text(encoding="utf-8")
