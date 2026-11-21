@@ -28,6 +28,7 @@ Who is who:
 
 - **The author** is one agent for the whole run, because how the sections connect is visible only to one that has read the whole paper.
 - **A reviewer** is a new agent for each review, with a fresh context. It is started with exactly five things: the path of `prompts/roles/reviewer.md`, the kind of review, the workspace, what is under review, and the file to write. It replies with its verdict and a count; the review itself reaches the author as a file.
+- **A second look at a review** is taken by the reviewer that wrote that review, continued with the same five things. It knows why it raised each issue, so it can tell whether a decision settles it. When that reviewer can no longer be continued, as in a run that was resumed, a new reviewer takes it. A second look at a round of the person's feedback is always a new reviewer.
 - **A transcriber** is a new agent, for a PDF only. It is started with exactly three things: the path of `prompts/roles/transcriber.md`, the PDF, and the path of `source/<input>/`.
 - Agents pass information only through files in the workspace, each file has one writer, and an author or a reviewer opens nothing but the workspace and the files under `prompts/`.
 

@@ -16,6 +16,7 @@ For whoever changes the design. No agent of a run reads this file.
 - **The chain is written directly from the paper.** See "The file layer" below.
 - **One author for the whole run.** How the sections connect is visible only to an agent that has read the whole paper.
 - **A new reviewer for each review, started with five fixed lines.** An agent that shares the author's context shares its misreadings.
+- **A second look at a review is taken by the reviewer that wrote it, continued.** A second look has no reading of the chain alone and starts from the earlier review, so a new agent gave it little independence: it took on that review's view from its file, and had to guess why each issue was raised. The reviewer that wrote the review has none of the author's view, knows why it raised each issue, and need not read the rules, the chain and the section again. The risk is that it holds to its own issues; the role tells it to judge a rejection against the paper. The person chose this without a test run; the open question below says what to compare. A second look at the person's feedback has no earlier reviewer and is a new agent.
 - **A reviewer reads the chain before the paper, and writes down where its reader gets stuck.** A reviewer that has read the paper supplies a missing reason without noticing. `docs/findings.md` has the test that showed it.
 - **A reviewer reads the chain a second time by subject.** Two statements several steps apart are met together only that way.
 - **One section at a time, and the author waits for each review.** Each section's steps build on reviewed steps, and a whole chain reviewed at once lets an early error carry into every later step.
@@ -66,3 +67,4 @@ For whoever changes the design. No agent of a run reads this file.
 
 - Whether the spine should wait for the person's confirmation before the sections are written. Today the person is shown the spine and the run goes on.
 - How many papers one author can hold. Several papers in one chain are out of scope.
+- Whether a continued reviewer judges decisions on its own issues as well as a new one, and what it saves. To compare: one section review, then author's decisions with a sound rejection, an unsound rejection and a change that drops a hedge planted in them, given to a new second look and to the continued reviewer; count what each finds and the tokens each takes.
