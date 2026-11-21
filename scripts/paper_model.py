@@ -1,12 +1,14 @@
 """The paper as a reader hands it to the convert script.
 
-A reader (`latex_reader` for LaTeX source) reads a paper and returns a Paper. The
-convert script names the paragraphs, writes the files and makes the checks from the
-Paper alone, so a reader can be replaced without changing the script. A PDF has no
-reader: an agent transcribes it, and `transcription` reads what the agent wrote.
+A reader (`latex_reader` for LaTeX source, `markdown_reader` for Markdown) reads a
+paper and returns a Paper. The convert script names the paragraphs, writes the files
+and makes the checks from the Paper alone, so a reader can be replaced without changing
+the script. A PDF has no reader: an agent transcribes it, and `transcription` reads
+what the agent wrote.
 
 Text is the paper's text as the reader gives it; from LaTeX source it is the LaTeX as
-written. The reader names every item's anchors. The script never computes a number.
+written, and from Markdown the Markdown as written. The reader names every item's
+anchors. The script never computes a number.
 """
 from __future__ import annotations
 
@@ -80,7 +82,12 @@ class Reference:
 @dataclass
 class Paper:
     title: str = ""
-    preamble: str = ""   # what stands before the text: from LaTeX, the macro definitions
+    # What stands before the text: from LaTeX, the macro definitions; from Markdown, the front matter.
+    preamble: str = ""
+    preamble_language: str = "latex"   # the language paper.md names on the preamble's code fence
     blocks: list[Heading | RunIn | Raw | Paragraph | Item] = field(default_factory=list)   # in the paper's order
     references: list[Reference] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)   # included files and figure files that were not found
+    # What the reader could not do for an item, in its own words, by the item's anchor, such as an image
+    # that could not be downloaded. It is reported in place of the script's own check of that item.
+    problems: dict[str, str] = field(default_factory=dict)
