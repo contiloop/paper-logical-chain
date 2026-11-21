@@ -34,6 +34,19 @@ A reviewer with a fresh context does a final review of the draft and is told not
 - A run that stopped was resumed by a new author from the workspace's files.
 - Cost: about 3.8 million tokens, of which the author about 0.9 million and 16 reviewers about 2.9 million.
 
+## A blog post from Markdown, one review per spine line
+
+The person's own draft of a blog post, in Korean, converted from Markdown: 11 top-level sections, 14 figures, about 4,250 words. Counts and cost only. The run used the spine line as the unit and continued the reviewer that wrote a review for its second look. It stopped at "awaiting the person", with no chain language named, on `opus` at effort `high`.
+
+- **The chain:** a reader line, 7 spine lines, 29 steps, about 2,690 words, 63% of the draft's words and 56% of its characters without spaces. One section of the post got no step.
+- **Reviews:** 9 reviews (the spine, 7 lines, the final review), each followed by a second look, so 18 in all. Every first review asked for changes, with 24 issues in all (7 on the spine, 15 on the lines, 2 in the final review). Every second look found nothing.
+- **Held questions:** 3, each answered at a step in the same round, so none was carried forward.
+- **Spine changes:** 1. The author narrowed one line while writing its steps. The review of that line covered the change, and no extra review was needed.
+- **Second looks:** all 9 continued the reviewer that wrote the review. A continued second look took 14 to 41 seconds and added 3,000 to 10,000 tokens to that reviewer's context. A first review took 107 to 285 seconds.
+- **Time:** 38 minutes from the author's start to "awaiting the person".
+- **Tokens:** the agent tool reports each agent's context size, not the tokens billed. At the end the author's context was about 247,000 tokens. Each line's reviewer ended at 102,000 to 135,000, and the final reviewer at about 200,000.
+- **The earlier trial on the same draft, for reference only.** It converted the draft to LaTeX by hand and went section by section, with a new agent for each second look. After the spine and 4 of 11 sections it had taken 10 reviews and about 22 minutes, and it was stopped there. The conversion, the review rules and the stopping point all differ, so the two runs do not compare one to one.
+
 ## The planted-error test
 
 Three errors were put into a copy of the accepted chain: a dropped hedge, a changed number and a wrong reading of a figure (`tests/inputs/beyond-rlhf-chain-with-planted-errors.md`, with its answer key beside it). A final reviewer, told nothing, reported all three.
