@@ -312,13 +312,13 @@ class _Reader:
                 self.fetch(source, self.downloads / anchor / name, self.seconds)
                 item.images.append(self.downloads / anchor / name)
             except DownloadFailed as error:
-                self.document.problems[anchor] = f"The image {source} could not be downloaded: {error}."
+                self.document.problems[anchor] = f"The image {source} of {anchor} could not be downloaded: {error}."
             return item
         found = self._find(source)
         if found:
             item.images.append(found)
         else:
-            self.document.problems[anchor] = f"{urllib.parse.unquote(source)}: the file was not found."
+            self.document.problems[anchor] = f"The image {urllib.parse.unquote(source)} of {anchor}: the file was not found."
         return item
 
     def _find(self, source: str) -> Path | None:
@@ -335,6 +335,11 @@ def _numbered(blocks: list[_Block]) -> dict[int, Heading]:
     The shallowest level present is level 1. A heading is one level in from the nearest
     heading above it that is shallower, so a skipped level does not count. An "Abstract"
     heading is the abstract and takes no part in the numbering.
+
+    Top-level headings keep their written numbers when every one of them has one. The parts
+    of a numbered section keep theirs when every one begins with the section's number and a
+    dot (3.1 and 3.2 under section 3); otherwise they are numbered in order under the
+    section's number, and a written number stays in the title.
     """
     @dataclass
     class Node:
@@ -360,6 +365,8 @@ def _numbered(blocks: list[_Block]) -> dict[int, Heading]:
             if child.block.title.lower() == "abstract":
                 headings[id(child.block)] = Heading("abstract", child.level, None, child.block.title)
                 number(child, None)
+        if prefix:
+            written = [found if found and found.group(1).startswith(prefix + ".") else None for found in written]
         for place, (child, found) in enumerate(zip(group, written), start=1):
             if group and all(written):
                 own, title = found.group(1), found.group(2).strip()

@@ -102,7 +102,7 @@ def _markdown_file(paper: Path) -> Path | None:
 
     if paper.is_file():
         return paper if paper.suffix.lower() in markdown_reader.SUFFIXES else None
-    if any(r"\documentclass" in latex_reader._without_comments(latex_reader._text(tex)) for tex in paper.glob("*.tex")):
+    if latex_reader.main_files(paper):
         return None
     files = sorted(f for f in paper.iterdir() if f.is_file() and f.suffix.lower() in markdown_reader.SUFFIXES)
     if len(files) != 1:
@@ -284,25 +284,31 @@ def _anchor_lines(anchors: list[str]) -> str:
     return "".join(f'<a id="{anchor}"></a>\n' for anchor in anchors)
 
 
-def _with_items(parts: list, by_item: dict[int, Place], figures: Path, problems: list[str]) -> str:
-    """Text as written, with the anchors of each item inside it put on a line before the item."""
+def _with_items(parts: list, by_item: dict[int, Place], figures: Path, problems: list[str],
+                in_paragraph: bool = False) -> str:
+    """Text as written, with the anchors of each item inside it put on a line before the item.
+
+    In a paragraph an item's image line ends without a blank line, so the paragraph stays one block.
+    """
     text = ""
     for part in parts:
         if isinstance(part, Item):
-            text += ("" if not text or text.endswith("\n") else "\n") + _item_text(by_item[id(part)], by_item, figures, problems)
+            text += ("" if not text or text.endswith("\n") else "\n") + _item_text(
+                by_item[id(part)], by_item, figures, problems, in_paragraph)
         else:
             text += part
     return text
 
 
-def _item_text(place: Place, by_item: dict[int, Place], figures: Path, problems: list[str]) -> str:
+def _item_text(place: Place, by_item: dict[int, Place], figures: Path, problems: list[str],
+               in_paragraph: bool = False) -> str:
     item: Item = place.block
     text = _anchor_lines(place.anchors)
     for n, image in enumerate(item.images, start=1):
         file = re.sub(r"[^A-Za-z0-9._-]+", "-", place.anchors[0]) + (f"-{n}" if len(item.images) > 1 else "") + ".png"
         try:
             _render_figure(image, figures / file)
-            text += f"![figure {place.anchors[0]}](figures/{file})\n\n"
+            text += f"![figure {place.anchors[0]}](figures/{file})\n" + ("" if in_paragraph else "\n")
         except Exception as error:  # an image format that cannot be read
             problems.append(f"The figure file {image.name} could not be made into an image ({error}).")
     return text + _with_items(item.body, by_item, figures, problems)
@@ -341,7 +347,7 @@ def write_source(document: Paper, name: str, target: Path) -> list[str]:
         elif isinstance(block, RunIn):
             paper.append(_anchor_lines(row.anchors) + f"**{block.title}**")
         elif isinstance(block, Paragraph):
-            paper.append(_anchor_lines(row.anchors) + _with_items(block.parts, by_item, figures, problems))
+            paper.append(_anchor_lines(row.anchors) + _with_items(block.parts, by_item, figures, problems, True))
             index.append(f"- [{row.location}](paper.md#{row.anchors[0]}) {first_words(block.words)}".rstrip())
         else:
             paper.append(_anchor_lines(row.anchors) + block.text)
