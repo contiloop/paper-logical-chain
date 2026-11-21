@@ -84,7 +84,7 @@ A run has three parts that know nothing of each other's insides.
 | `prompts/` | says what a chain is, what each agent does and what each file holds | any agent tool |
 | a skill, one for each agent tool | starts each agent on a set model, runs the scripts, carries the person's words | the rules |
 
-A run goes: convert → the author writes the spine (the paper's conclusion and the claims it rests on) → a reviewer checks the spine → for each section of the paper, the author writes steps and a reviewer with a fresh context reviews them → a final review of the whole chain → the person reads it and gives feedback or accepts. `prompts/work-graph.md` has the jobs and what passes between them.
+A run goes: convert → the author writes the spine (the paper's conclusion and the claims it rests on) → a reviewer checks the spine → for each line of the spine, in order, the author writes the steps that carry it and a reviewer with a fresh context reviews them → a final review of the whole chain → the person reads it and gives feedback or accepts. `prompts/work-graph.md` has the jobs and what passes between them.
 
 Each agent tool has its own skill: `skills/paper-chain/SKILL.md` for Claude Code and `.agents/skills/paper-chain/SKILL.md` for Codex. A run has the same agents, launch lines and workspace in both. The plugin's folder, which holds `prompts/` and `scripts/`, is the project folder of every instruction; the run's workspace is in the folder the session is open in. A part for another tool would be one more skill.
 

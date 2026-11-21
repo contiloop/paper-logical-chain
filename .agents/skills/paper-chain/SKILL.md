@@ -85,7 +85,7 @@ It writes `check-report.md` in the workspace. Exit code 0 is pass and 1 is fail.
 
 ```
 Reviewer role file: <project folder>/prompts/roles/reviewer.md
-Kind of review: <a spine review, a section review, a second look, or the final review>
+Kind of review: <a spine review, a review of a spine line, a second look, or the final review>
 Workspace: <workspace>
 Under review: <what is under review>
 Write your review to: <the review file>

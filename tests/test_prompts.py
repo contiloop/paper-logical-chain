@@ -167,3 +167,38 @@ def test_no_tracked_file_holds_the_old_package_name():
         and old_name in (ROOT / name).read_text(encoding="utf-8", errors="ignore")
     ]
     assert holding == []
+
+
+# One review per spine line. A review of a line is numbered in the order the author asks for it,
+# so that a change to the spine never renames a review file.
+REVIEW_FORMAT = ROOT / "prompts/formats/review.md"
+INSTRUCTIONS = sorted((ROOT / "prompts").rglob("*.md")) + SKILLS
+SECTION_AS_UNIT = r"section-(<NN>|\d\d)|\bsection(?:'s)? reviews?\b|\b(?:write|review) a section\b"
+
+
+def test_a_line_review_and_its_second_look_are_numbered_parts():
+    text = REVIEW_FORMAT.read_text(encoding="utf-8")
+    assert "`reviews/part-<NN>.md`" in text
+    assert "`reviews/part-<NN>.second-look.md`" in text
+
+
+@pytest.mark.parametrize("path", INSTRUCTIONS, ids=name)
+def test_no_instruction_takes_a_section_of_the_paper_as_the_unit_of_review(path):
+    found = [
+        f"line {number}: {line.strip()[:80]}"
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1)
+        if re.search(SECTION_AS_UNIT, line, re.IGNORECASE)
+    ]
+    assert found == []
+
+
+@pytest.mark.parametrize("path", INSTRUCTIONS, ids=name)
+def test_no_instruction_has_a_no_steps_state(path):
+    """Every spine line has steps; a line no step carries is an error the final review finds."""
+    assert re.search(r"`no steps`|\b(?:or|for) no steps\b", path.read_text(encoding="utf-8")) is None
+
+
+@pytest.mark.parametrize("path", SKILLS, ids=name)
+def test_each_skill_names_the_kinds_of_review(path):
+    kinds = "a spine review, a review of a spine line, a second look, or the final review"
+    assert f"Kind of review: <{kinds}>" in path.read_text(encoding="utf-8")
