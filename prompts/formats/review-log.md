@@ -7,9 +7,9 @@ Written by the author, at the top of the workspace, in English. A run is resumed
 
 ## Progress
 
-| Section | State | Steps | Note |
+| Spine line | State | Steps | Reviews |
 |---|---|---|---|
-| 01 <section name> | <not written, in review, finished, or no steps> | <first to last step> | <for no steps: the reason> |
+| 1. <the line, as the spine words it now> | <not written, in review, or finished> | <first to last step> | <each review file that covered the line> |
 | Final review | <not run, in review, or finished> | | |
 
 Chain: <in progress, awaiting the person, or accepted>
@@ -22,29 +22,35 @@ Chain: <in progress, awaiting the person, or accepted>
 
 Review: `reviews/spine.md`, verdict <ok, or needs changes>
 
-<a table of issues, and a second look, as a section's>
+<a table of issues, and a second look, as a spine line's>
 
-## Section 01: <section name>
+## Review part-01: spine line <N>, "<the line's text>"
 
-Review: `reviews/section-01-<section name>.md`, verdict <ok, or needs changes>
+Review: `reviews/part-01.md`, verdict <ok, or needs changes>
 
 | Issue | Step | Kind | Decision | What changed, or why not |
 |---|---|---|---|---|
 | 1. <the issue in a few words> | <N> | <kind> | <accepted, accepted in part, or rejected> | … |
 
-Second look: `reviews/section-01-<section name>.second-look.md`, verdict <ok, or needs changes>
+Second look: `reviews/part-01.second-look.md`, verdict <ok, or needs changes>
 
 <a table of the same form>
 
 ## Final review
 
-<as a section's part>
+<as a spine line's part>
+
+## Spine changes
+
+| Change | Steps | Reviewed in |
+|---|---|---|
+| <a line added, removed or reworded, or the steps of an earlier line changed, with the line's text> | <the steps changed, added or moved> | <the review file that covered it> |
 
 ## Held questions
 
 | Question | From | Step | Held for | Answered at |
 |---|---|---|---|---|
-| <the question> | <the review and its question number> | <N> | <section NN> | <the step that answers it; empty while held> |
+| <the question> | <the review and its question number> | <N> | <the text of the spine line it is held for> | <the step that answers it; empty while held> |
 
 ## The person's feedback
 
@@ -59,7 +65,7 @@ Misses:
 
 Review: `reviews/feedback-1.md`, verdict <ok, or needs changes>
 
-<a table of issues, as a section's>
+<a table of issues, as a spine line's>
 
 ## Open issues
 
@@ -67,6 +73,7 @@ Review: `reviews/feedback-1.md`, verdict <ok, or needs changes>
 ```
 
 - A part with nothing in it holds the word "None."
-- One row in Progress for every top-level section of the main text, numbered in two digits as the review files are. A state changes when the thing it describes happens.
+- One row in Progress for every line of the spine as it stands now, in its order and with its number. When the spine changes, the rows change with it, and a row keeps the review files that covered its line. A state changes when the thing it describes happens.
+- The part for a review of a spine line names the line by its number and text when the review was asked for, and keeps them when the spine changes later.
 - An issue keeps the number its review gave it, so that a second look finds the decision on it.
-- No row of Held questions is removed; the last column is filled in when a step answers the question.
+- No row of Held questions is removed; the last column is filled in when a step answers the question. When the line a question is held for is reworded or removed, `Held for` becomes the text of the line that now carries the answer.

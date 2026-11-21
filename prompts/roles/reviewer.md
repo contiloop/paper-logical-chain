@@ -19,9 +19,9 @@ Under review is the spine at the top of `logical-chain.md`, before any step is w
 
 A spine review has no first part.
 
-## A section review
+## A review of a spine line
 
-Under review are the steps of one section of the paper, given by number, and any earlier step the author changed while writing them.
+Under review are the steps that carry one line of the spine, given with the line's number and text, and any step of an earlier line the author changed or moved while writing them. When the author names a line of the spine it changed or added, check that line against the paper as a spine review checks a line: a claim the paper makes, no stronger than the paper states it.
 
 ### 1. The chain alone
 
@@ -45,23 +45,29 @@ A question is answered only by what the chain states: for a reason, its gist wit
 
 ### 2. Against the paper
 
-Read `prompts/formats/source.md`, then the section in `source/<input>/`. Follow every link of the steps under review and open the image of every figure and table they rest on. For each step:
+Read `prompts/formats/source.md`. Then read in full every innermost section of `source/<input>/paper.md` that holds a place the steps under review link: the text under the innermost heading that holds it, such as §3.2, up to the next heading. Follow every link of those steps and open the image of every figure and table they rest on.
+
+To find what the line rests on that the steps leave out, and before you drop a question as unanswered, search the text of `paper.md` for the line's terms and the question's, and open only the paragraphs the search finds. `paragraphs.md` shows only the first words of each paragraph: it is a table of contents, not something to search. Read no more of the paper than this.
+
+- Why: a run has a review for every line of the spine, and reading the whole paper for each would cost more than the reviews by line save.
+
+For each step:
 
 - every statement is in the paper at the place linked, numbers and readings of a figure included; compute arithmetic with code;
 - no claim is stronger than the paper's: no hedge or condition dropped, no assumption or conjecture turned into a result;
-- the steps carry every link of the spine that this section establishes, and no step or sentence is one the spine's test removes.
+- the steps carry the line, with nothing the line rests on left out, and no step or sentence is one the spine's test removes.
 
 Then settle each place of part 1:
 
-- The paper answers it in this section, an earlier one or an appendix: an issue.
-- The paper answers it in a later section of the main text: a held question.
-- The paper does not answer it anywhere: drop it. Search the whole paper before you do.
+- The paper answers it, and the answer belongs under this line or an earlier one, or is in an appendix: an issue.
+- The paper answers it where the answer belongs under a later line of the spine: a held question, held for that line, named by the line's text.
+- The paper does not answer it anywhere you searched: drop it.
 
-Earlier reviews may have held questions for this section. They are in `review-log.md` under "Held questions"; read only that part of the file. One the chain still does not answer is an issue.
+Earlier reviews may have held questions for this line. They are in `review-log.md` under "Held questions"; read only that part of the file. One the chain still does not answer is an issue.
 
 ## The final review
 
-Under review is the complete chain. Both parts as above, over every step and the whole paper, appendices included. No question can be held any more. Check the spine against the whole paper as a spine review does, and look in particular for what a section review cannot see: a line of the spine that no step carries, a term explained after its first use, two distant steps that disagree, a step that points ahead to something the chain never gives.
+Under review is the complete chain. Both parts as above, over every step and the whole paper, appendices included. No question can be held any more. Check the spine against the whole paper as a spine review does, and look in particular for what the review of one line cannot see: a line of the spine that no step carries, a term explained after its first use, two distant steps that disagree, a step that points ahead to something the chain never gives.
 
 ## A second look
 

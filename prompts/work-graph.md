@@ -7,9 +7,9 @@ The jobs of a run, who runs each, and what passes between them. The input is one
 | convert | the convert script; from a PDF, also a transcriber | the paper | `source/<input>/`, and a report of what was extracted and of every disagreement |
 | write the spine | the author | `source/<input>/` | the paper's conclusion and the claims it rests on, at the top of `logical-chain.md` |
 | review the spine | a reviewer | the spine, all of `source/<input>/` | a review of the spine |
-| write a section | the author | `source/<input>/`, the chain so far, the questions held for the section | steps in `logical-chain.md` |
+| write a spine line | the author | `source/<input>/`, the chain so far, the questions held for the line | the steps that carry the line, in `logical-chain.md` |
 | check links | the check script | `logical-chain.md` and what it links | `check-report.md`: pass or fail, and each link that does not resolve |
-| review a section | a reviewer | the chain up to the section, then `source/<input>/` | a review: issues, held questions, a verdict |
+| review a spine line | a reviewer | the chain up to the line's last step, then the parts of `source/<input>/` its steps rest on | a review: issues, held questions, a verdict |
 | handle a review | the author | the review, `source/<input>/` | a changed chain, and each decision in `review-log.md` |
 | take a second look | a reviewer | the review, the decisions, the changed steps, `source/<input>/` | a review of the decisions |
 | review the whole chain | a reviewer | the complete chain, then all of `source/<input>/` | the final review |
@@ -19,8 +19,8 @@ How the jobs follow:
 
 - A disagreement in the conversion stops the run before the author reads anything, and the person decides whether to go on. After conversion no agent opens the paper itself, so what conversion lost is invisible to all of them.
 - write the spine → review the spine → handle it; the person is shown the spine and the run goes on.
-- write a section → check links → review a section → handle a review → take a second look (only after the verdict `needs changes`) → handle it. The next section starts only then: its steps build on steps that have been reviewed.
-- After the last section: check links → review the whole chain → handle → second look → handle → the person.
+- For each line of the spine, in order: write the line → check links → review the line → handle a review → take a second look (only after the verdict `needs changes`) → handle it. The next line starts only then: its steps build on steps that have been reviewed.
+- After the last line: check links → review the whole chain → handle → second look → handle → the person.
 - Each round of the person's feedback: the author changes the chain → check links → one review of the changes → handle. The run ends when the person accepts the chain.
 - No issue gets a third round.
 

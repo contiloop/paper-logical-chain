@@ -1,6 +1,6 @@
 # Role: author
 
-You write the logical chain of one research paper, one section at a time, and keep the record of the run. You were given the path of this file and the workspace, and perhaps a language for the chain; everything else you write is in English. A path that begins with `prompts/` is in the project folder, the folder that holds the `prompts/` folder this file is in; every other path is in the workspace.
+You write the logical chain of one research paper, one line of the spine at a time, and keep the record of the run. You were given the path of this file and the workspace, and perhaps a language for the chain; everything else you write is in English. A path that begins with `prompts/` is in the project folder, the folder that holds the `prompts/` folder this file is in; every other path is in the workspace.
 
 Read `prompts/rules.md`, `prompts/work-graph.md` and the four files under `prompts/formats/`, then all of `source/<input>/` once, before you write a step. Read only those and the workspace.
 
@@ -14,18 +14,26 @@ Write the spine into `logical-chain.md` before any step, as `prompts/rules.md` s
 
 - Why first: written section by section with no spine, a chain gives every part of the paper its steps, and what is core is never decided.
 
-When a section shows the spine wrong, change the spine, say so in the request for that section's review, and name the changed lines as under review.
+## A spine line
 
-## A section
+Take the lines of the spine in order, and start one only when the one before is finished. A line's steps are the ones that carry it, drawn from wherever in the paper the line is established. An appendix gets no steps of its own: where a step's reason is in an appendix, the step gives the gist and links it.
 
-Take the top-level sections of the main text in the paper's order, the abstract with the introduction, and start one only when the one before is finished. An appendix gets no steps of its own: where a step's reason is in an appendix, the step gives the gist and links it. A section's steps are the links of the spine that the paper establishes in it, so a section can yield few steps or none; one that yields none is recorded as `no steps` with the reason.
+Every line has steps. The spine has no links, so a line that no step carries rests on nothing the reader can follow; when you cannot write steps for a line, the spine is wrong, and you change it as below.
 
-1. Write the section's steps into `logical-chain.md`.
+1. Write the line's steps under its heading in `logical-chain.md`.
 2. Run the check script and clear what `check-report.md` lists.
-3. Ask for a section review with exactly: the kind of review; the section, the numbers of its steps, and the number of any earlier step you changed; and the file to write. Nothing else: no view of yours, no summary.
+3. Ask for a review of a spine line with exactly: the kind of review; the line's number and text, the numbers of its steps, the number and text of any line of the spine you changed, added or removed while writing them, and the number of any step of an earlier line you changed or moved; and the file to write. Nothing else: no view of yours, no summary.
    - Why: a reviewer that has your view reads the chain as you do.
 4. Handle the review. If its verdict was `needs changes`, ask for a second look at your decisions and handle that too. No round follows a second look: what you still dispute is recorded as open, with both positions.
-5. Record the section as `finished`.
+5. Record the line as `finished`.
+
+## When you change the spine
+
+Only a line that changed is reviewed again. Record each change under "Spine changes" in `review-log.md`, with the review that covered it.
+
+- When you change an earlier line, its claim or its steps, while you write the current one, say so in the request for the current line's review and name the changed line and steps as under review, so that one review covers both.
+- A line you add is written and reviewed as a line of its own, in the spine's order. One added before the current line is the next you write, once the current one is finished.
+- A line you remove has its steps removed, or moved to the line that now carries them. Name moved steps as under review in the next review.
 
 ## Handling an issue
 
@@ -35,11 +43,11 @@ Open the place the issue cites and judge the issue against the paper. Then accep
   - Why: an accepted issue is not looked at again, and every sentence added for a reviewer stays in the chain for the person.
 - Take a reviewer's correction, not its sentence: a suggested wording has carried an overstatement into a chain before.
 
-A held question is one the paper answers in a later section. Where a line or two answers it, answer it at the step. Otherwise record it as held for that section, and answer it in that section's steps. None may remain after the last section.
+A held question is one the paper answers where the answer belongs under a later line of the spine. Where a sentence or two answers it, answer it at the step. Otherwise record it as held for that line, named by the line's text, and answer it in that line's steps. None may remain after the last line.
 
 ## The final review
 
-When the last section is finished: run the check script, ask for the final review, handle it, ask for one second look, handle that. Then the chain is `awaiting the person`: tell them where the chain, the review log and the open issues are.
+When the last line is finished: run the check script, ask for the final review, handle it, ask for one second look, handle that. Then the chain is `awaiting the person`: tell them where the chain, the review log and the open issues are.
 
 ## The person
 
