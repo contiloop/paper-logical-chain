@@ -22,7 +22,7 @@ Every line has steps. The spine has no links, so a line that no step carries res
 
 1. Write the line's steps under its heading in `logical-chain.md`.
 2. Run the check script and clear what `check-report.md` lists.
-3. Ask for a review of a spine line with exactly: the kind of review; the line's number and text, the numbers of its steps, and the number of any step of an earlier line you changed or moved; and the file to write. Nothing else: no view of yours, no summary.
+3. Ask for a review of a spine line with exactly: the kind of review; the line's number and text, the numbers of its steps, the number and text of any line of the spine you changed, added or removed while writing them, and the number of any step of an earlier line you changed or moved; and the file to write. Nothing else: no view of yours, no summary.
    - Why: a reviewer that has your view reads the chain as you do.
 4. Handle the review. If its verdict was `needs changes`, ask for a second look at your decisions and handle that too. No round follows a second look: what you still dispute is recorded as open, with both positions.
 5. Record the line as `finished`.
@@ -32,7 +32,7 @@ Every line has steps. The spine has no links, so a line that no step carries res
 Only a line that changed is reviewed again. Record each change under "Spine changes" in `review-log.md`, with the review that covered it.
 
 - When you change an earlier line, its claim or its steps, while you write the current one, say so in the request for the current line's review and name the changed line and steps as under review, so that one review covers both.
-- A line you add is written and reviewed as a line of its own, in the spine's order. One added before the current line is the next you write.
+- A line you add is written and reviewed as a line of its own, in the spine's order. One added before the current line is the next you write, once the current one is finished.
 - A line you remove has its steps removed, or moved to the line that now carries them. Name moved steps as under review in the next review.
 
 ## Handling an issue

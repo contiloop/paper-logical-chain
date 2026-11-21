@@ -21,7 +21,7 @@ A spine review has no first part.
 
 ## A review of a spine line
 
-Under review are the steps that carry one line of the spine, given with the line's number and text, and any step of an earlier line the author changed or moved while writing them.
+Under review are the steps that carry one line of the spine, given with the line's number and text, and any step of an earlier line the author changed or moved while writing them. When the author names a line of the spine it changed or added, check that line against the paper as a spine review checks a line: a claim the paper makes, no stronger than the paper states it.
 
 ### 1. The chain alone
 
