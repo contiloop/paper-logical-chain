@@ -93,12 +93,17 @@ def _cited(body: str) -> list[tuple[str, str]]:
     return found
 
 
+def main_files(folder: Path) -> list[Path]:
+    """The .tex files directly in `folder` that hold \\documentclass outside a comment, sorted by name."""
+    return [f for f in sorted(folder.glob("*.tex")) if r"\documentclass" in _without_comments(_text(f))]
+
+
 def _main_file(paper: Path) -> Path:
     """The file that holds \\documentclass: `paper` itself, or the one such file in the folder."""
     paper = paper.resolve()
     if paper.is_file():
         return paper
-    mains = [f for f in sorted(paper.glob("*.tex")) if r"\documentclass" in _without_comments(_text(f))]
+    mains = main_files(paper)
     if len(mains) != 1:
         found = ", ".join(f.name for f in mains) or "none"
         raise ConversionError(f"{paper} must hold exactly one .tex file with \\documentclass (found: {found}); "

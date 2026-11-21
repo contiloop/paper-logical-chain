@@ -1,8 +1,8 @@
 # Paper logical chain
 
-Turns one research paper into a logical chain: the paper's argument told in numbered steps, each linked to the place in the paper it rests on. A person builds a talk from the chain without re-reading the paper.
+Turns one research paper or blog post into a logical chain: its argument told in numbered steps, each linked to the place in the text it rests on, with what the argument does not need left out. A person builds a talk from the chain without re-reading the text.
 
-It is a plugin for Claude Code and for Codex. The person gives a paper, as a folder of LaTeX source or, in Claude Code only, a PDF, and reads the chain at the end.
+It is a plugin for Claude Code and for Codex. The person gives a paper or a post, as a folder of LaTeX source, a Markdown file or, in Claude Code only, a PDF, and reads the chain at the end.
 
 ## Install
 
@@ -24,15 +24,17 @@ codex plugin add paper-logical-chain@paper-logical-chain
 
 ## Use
 
-Open Claude Code or Codex in the folder where the run's files should go, start the skill `paper-chain` (in Claude Code `/paper-logical-chain:paper-chain`) with the paper's path, and name a language if the chain is not to be in English. The chain is written to `workspaces/<the paper's subject>/logical-chain.md` in that folder.
+Open Claude Code or Codex in the folder where the run's files should go, start the skill `paper-chain` (in Claude Code `/paper-logical-chain:paper-chain`) with the text's path, and name a language if the chain is not to be in the text's own language. The chain is written to `workspaces/<the text's subject>/logical-chain.md` in that folder.
+
+An image of a Markdown file whose path is a web address is downloaded during conversion, so conversion reaches the network for those images. In Codex's sandbox such a download is expected to fail and is reported as a disagreement; download the images and point the file at local copies instead.
 
 In Codex the first run asks to run `uv sync` in the plugin's folder outside the sandbox, once for each version of the plugin: it writes there and downloads packages, which the sandbox does not allow.
 
 ## Calling it from another orchestrator
 
-A pipeline that goes on from the chain, to a script or a video, runs this stage by having its own skill ask for `paper-chain` in the same session: `paper-logical-chain:paper-chain` in Claude Code, the skill `paper-chain` of the plugin `paper-logical-chain` in Codex, which takes LaTeX source only. The session's own agent then runs the stage. A started agent cannot, because it cannot reach the person.
+A pipeline that goes on from the chain, to a script or a video, runs this stage by having its own skill ask for `paper-chain` in the same session: `paper-logical-chain:paper-chain` in Claude Code, the skill `paper-chain` of the plugin `paper-logical-chain` in Codex, which takes LaTeX source or a Markdown file. The session's own agent then runs the stage. A started agent cannot, because it cannot reach the person.
 
-The orchestrator's instructions may give the paper, the workspace, the input name (the first author's family name and the year, such as `lee2024`) and the chain's language. Four decisions stay with the person and are answered only in their own words: whether a run goes on after a **disagreement** in conversion, each round of **feedback**, **acceptance** of the chain, and each addition to the **reviewer's list of question kinds**.
+The orchestrator's instructions may give the paper, the workspace, the input name (the first author's family name and the year, such as `lee2024`; for a text whose author is not named, a short word for it and the year) and the chain's language. Four decisions stay with the person and are answered only in their own words: whether a run goes on after a **disagreement** in conversion, each round of **feedback**, **acceptance** of the chain, and each addition to the **reviewer's list of question kinds**.
 
 When the person accepts the chain, the stage ends with these lines, with absolute paths:
 
@@ -70,7 +72,7 @@ scripts/     convert.py and check.py, and the modules they use
 tests/       tests of the scripts and of the prompts, and under tests/inputs/ the inputs of the reviewer tests
 docs/        for whoever changes the system
 install.sh   for whoever changes the system: the scripts' environment and the test paper
-local/       not committed: the downloaded test paper, and words the prompt tests keep out
+local/       not committed: the downloaded test paper, Markdown drafts of the person's own under drafts/, settings.toml naming where the person's own texts are, and words the prompt tests keep out
 workspaces/  not committed: the runs made in this folder
 ```
 
@@ -80,11 +82,11 @@ A run has three parts that know nothing of each other's insides.
 
 | Part | Does | Knows nothing of |
 |---|---|---|
-| `scripts/` | turns a paper into `source/<input>/` in the workspace, and checks that every link of a chain resolves | agents |
+| `scripts/` | turns a paper or a post into `source/<input>/` in the workspace, and checks that every link of a chain resolves | agents |
 | `prompts/` | says what a chain is, what each agent does and what each file holds | any agent tool |
 | a skill, one for each agent tool | starts each agent on a set model, runs the scripts, carries the person's words | the rules |
 
-A run goes: convert → the author writes the spine (the paper's conclusion and the claims it rests on) → a reviewer checks the spine → for each section of the paper, the author writes steps and a reviewer with a fresh context reviews them → a final review of the whole chain → the person reads it and gives feedback or accepts. `prompts/work-graph.md` has the jobs and what passes between them.
+A run goes: convert → the author writes the spine (the text's conclusion and the claims it rests on, under a line naming the chain's reader) → a reviewer checks the spine → for each line of the spine, in order, the author writes the steps that carry it and a reviewer with a fresh context reviews them → a final review of the whole chain → the person reads it and gives feedback or accepts. `prompts/work-graph.md` has the jobs and what passes between them.
 
 Each agent tool has its own skill: `skills/paper-chain/SKILL.md` for Claude Code and `.agents/skills/paper-chain/SKILL.md` for Codex. A run has the same agents, launch lines and workspace in both. The plugin's folder, which holds `prompts/` and `scripts/`, is the project folder of every instruction; the run's workspace is in the folder the session is open in. A part for another tool would be one more skill.
 
@@ -97,7 +99,7 @@ Each agent tool has its own skill: `skills/paper-chain/SKILL.md` for Claude Code
 | What a reviewer looks for and how it reports | `prompts/roles/reviewer.md`, `prompts/formats/review.md` |
 | What the author does and in what order | `prompts/roles/author.md`, `prompts/work-graph.md` |
 | The model and effort of the agents, how an agent is started | in Claude Code `skills/paper-chain/SKILL.md`, described in `docs/claude-code.md`; in Codex `.agents/skills/paper-chain/SKILL.md`, described in `docs/codex.md` |
-| How a paper is converted | `scripts/`, described in `docs/scripts.md` |
+| How a paper or a post is converted | `scripts/`, described in `docs/scripts.md` |
 | The plugin's name, description or licence | `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json` and `.claude-plugin/marketplace.json` together |
 
 The author and every reviewer read the same rules and formats, and no file copies their text.
@@ -107,7 +109,7 @@ When a chain holds a sentence the person does not want, the cause is in an instr
 ## What is not committed, and why
 
 - `local/` and `workspaces/`. No paper is committed and nothing made from one: a paper may be unpublished, and a run's output is of use only with its paper.
-- Words that name a paper of the person's own: they go in `local/private-words.txt`, one regular expression a line, and the prompt tests check that no instruction file and no plugin file holds them.
+- Words that name a paper or a post of the person's own: they go in `local/private-words.txt`, one regular expression a line, and the prompt tests check that no instruction file and no plugin file holds them.
 - No file under `prompts/` holds content of a paper the system is tested on, and none points an agent to `docs/` or `tests/`, which hold answer keys. The same holds for the two skills and the plugin files. `tests/test_prompts.py` checks this.
 
 ## Licence

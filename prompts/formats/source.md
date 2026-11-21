@@ -1,11 +1,11 @@
 # Format: source/&lt;input&gt;/
 
-The paper, converted, in `source/<input>/` of the workspace, where `<input>` is the first author and the year, such as `lee2024`. The author and the reviewers read it in place of the paper. From LaTeX source the convert script writes all of it. From a PDF the transcriber writes `paper.md` and the script writes the rest.
+The text, converted, in `source/<input>/` of the workspace, where `<input>` is named as `prompts/work-graph.md` says. The author and the reviewers read it in place of the original. From LaTeX source or a Markdown file the convert script writes all of it. From a PDF the transcriber writes `paper.md` and the script writes the rest.
 
 ## Files
 
-- `paper.md`: the whole paper in its order, with an anchor on every paragraph and on every item. Items are statements (theorem, lemma, assumption and the like), numbered equations, figures, tables, algorithms and reference-list entries. From LaTeX source the text is the LaTeX as written, with included files in place and comments removed; the paper's macros are defined under `## Preamble`. From a PDF it is a transcription of the pages, with the mathematics in LaTeX.
-- `paragraphs.md`: one row for each paragraph and each item, in the paper's order, each a location linked to its anchor in `paper.md`. A row set in under another is an item inside that paragraph or item.
+- `paper.md`: the whole text in its order, with an anchor on every paragraph and on every item. Items are statements (theorem, lemma, assumption and the like), numbered equations, figures, tables, algorithms and reference-list entries. From LaTeX source the text is the LaTeX as written, with included files in place and comments removed; the paper's macros are defined under `## Preamble`. From a PDF it is a transcription of the pages, with the mathematics in LaTeX.
+- `paragraphs.md`: one row for each paragraph and each item, in the text's order, each a location linked to its anchor in `paper.md`. A row set in under another is an item inside that paragraph or item.
 - `figures/`: an image of every figure, named after its anchor, such as `fig-delay.png` for `fig:delay`. From a PDF the image holds the caption too.
 - `tables/`, from a PDF only: an image of every table with its caption, such as `table-2.png`.
 - `pages/`, from a PDF only: an image of every page of the file. `page-003.png` is the third.
@@ -18,11 +18,12 @@ Which image to open:
 
 ## Locations
 
-A location is text that a reader of the paper can follow, written as a link to the anchor of what it names. From a file at the top of the workspace the target is `source/<input>/paper.md#<anchor>`.
+A location is text that a reader of the text can follow, written as a link to the anchor of what it names. From a file at the top of the workspace the target is `source/<input>/paper.md#<anchor>`.
 
 A paragraph's location and anchor are those of its row in `paragraphs.md`.
 
 - From LaTeX source: section, run-in heading, paragraph: `[§3, Delay bound ¶2](source/lee2024/paper.md#s3-delay-bound-p2)`. The section is the innermost numbered one, such as `§3.2` or `§B.2`; the abstract is `Abstract`, and a section without a number is named by its title. The heading is the run-in heading the paragraph stands under, when there is one. Paragraph numbers restart under each heading and each run-in heading.
+- From Markdown: section, paragraph: `[§2.1 ¶3](source/lee2024/paper.md#s2.1-p3)`. The section is the innermost one, numbered as "From Markdown" below says; the abstract is `Abstract`. A paragraph before the first heading is `[Before the first heading ¶1](source/lee2024/paper.md#start-p1)`. Paragraph numbers restart under each heading.
 - From a PDF: page, heading, paragraph: `[p.3, Delay bound ¶2](source/lee2024/paper.md#p3-2)`. The page is the page of the file on which the paragraph starts, counted from 1 as in the names of the page images; it can differ from the page number the paper prints. The heading is the innermost one, a run-in heading or else a section's title without its number; a paragraph before the first heading has none: `[p.1 ¶1]`. `¶2` is the second paragraph that starts on that page.
 
 An item's location is its kind and number as the paper prints them, linked to its anchor: `[Theorem 2](source/lee2024/paper.md#theorem-2)`.
@@ -35,6 +36,16 @@ The script runs no LaTeX, so no number that the compiled paper prints on a state
 - An item without a label is named by its kind and its place among the items of that kind in the source, such as `#table-source-order-3`. That place is not the printed number: kinds that share one counter, and items the paper does not number, make the two differ.
 - To give an item's printed number, work it out from the source: the `\newtheorem` lines under `## Preamble` say which kinds share a counter. Link the item's anchor either way.
 - Section numbers are counted from the sectioning commands, the starred ones left out, with letters after `\appendix`.
+
+## From Markdown
+
+The convert script writes all of the folder. The text is the Markdown as written; the front matter, if any, stands under `## Preamble` as YAML.
+
+- Every heading but the title and an "Abstract" heading has a section number, whatever language its title is in, and `paper.md` shows it before the title. When every top-level heading begins with a number (`3`, `3.` or `3.2`, then a space), those numbers are used; otherwise the top-level headings are numbered 1, 2, 3 in order. The parts of section 3 keep their own numbers only when every part begins with 3 and a dot, such as `3.1` and `3.2`; otherwise they are numbered 3.1, 3.2 in order, and a number written in a part's heading, such as `1.`, stays in its title. A heading that skips a level is one level in from the nearest shallower heading above it. The title is the first heading when it is the only one of level 1. An "Abstract" heading is the abstract.
+- Every paragraph has an anchor. A list, a block quote, a code block and a `$$…$$` formula are each one paragraph. A block of raw HTML has no anchor.
+- The only items are figures and tables, named by kind and place: `#figure-source-order-3`, `#table-source-order-1`. Links and footnotes are as written, and nothing checks where they lead.
+- An image alone in its paragraph is a figure; a line set wholly in italics right under it, with no blank line between, is its caption. An image inside text is a figure inside that paragraph.
+- To check a figure, open its image in `figures/`, named after its anchor: the first image `paper.md` links after the figure's anchor, such as `figures/figure-source-order-3.png`. The image link written in the text after it leads to the original file, not into this folder. A figure whose image was not found or could not be downloaded has none; the convert report names it.
 
 ## From a PDF, the script's commands
 

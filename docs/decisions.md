@@ -8,6 +8,8 @@ For whoever changes the design. No agent of a run reads this file.
 - **The author writes the spine first: the paper's conclusion and the claims it rests on.** A step is a link of the spine, and the test for anything in the chain is whether the way to the conclusion still stands without it. Written section by section with no spine, a chain gave every part of the paper its steps and what is core was never decided. On the person's paper the chain went from 21 or 22 steps to 14.
 - **A reason is a gist with a link.** A chain held to giving each reason in full came out longer than the paper it described. Every paragraph of the converted paper has an anchor, so the explanation stays in the paper and the chain links it.
 - **A result is told as the paper claims it.** A table or a figure is set against the paper's words only where the claim no longer stands. One measure among several that goes the other way does not make a general claim false, and a chain that sets such places against the claim is reviewing the paper.
+- **A text other than a paper gets the same chain.** The person writes blog posts from drafts an AI researched and wants the same thing from them: the argument, with what it does not need left out. Only the chain's reader changes: a researcher of the field for a paper, the audience the text addresses for anything else. The author names that reader above the spine and the person corrects it as they correct the spine. The text is the authority; checking it against the sources it cites was left for later work, and so was a map of a draft's sentences to keep, shorten or cut.
+- **The chain is in the text's language unless the person names one.** A Korean post read by Korean readers would otherwise get an English chain. This holds for papers too.
 - **The rules state intent.** `prompts/rules.md` says what a chain is and three things that must hold, and they are judged as the person giving the talk would judge them. See "Rules made from one correction" below for what this replaced.
 - **What a model already does well is not written.** The instruction files were cut to what an agent would not do or know unasked.
 
@@ -19,7 +21,10 @@ For whoever changes the design. No agent of a run reads this file.
 - **A second look at a review is taken by the reviewer that wrote it, continued.** A second look has no reading of the chain alone and starts from the earlier review, so a new agent gave it little independence: it took on that review's view from its file, and had to guess why each issue was raised. The reviewer that wrote the review has none of the author's view, knows why it raised each issue, and need not read the rules, the chain and the section again. The risk is that it holds to its own issues; the role tells it to judge a rejection against the paper. The person chose this without a test run; the open question below says what to compare. A second look at the person's feedback has no earlier reviewer and is a new agent.
 - **A reviewer reads the chain before the paper, and writes down where its reader gets stuck.** A reviewer that has read the paper supplies a missing reason without noticing. `docs/findings.md` has the test that showed it.
 - **A reviewer reads the chain a second time by subject.** Two statements several steps apart are met together only that way.
-- **One section at a time, and the author waits for each review.** Each section's steps build on reviewed steps, and a whole chain reviewed at once lets an early error carry into every later step.
+- **One line of the spine at a time, and the author waits for each review.** Each line's steps build on reviewed steps, and a whole chain reviewed at once lets an early error carry into every later step. The unit was a top-level section of the paper until a trial on a blog post: after the spine and 4 of its 11 sections the run had taken 10 reviews and about 22 minutes, while its spine had 7 lines. With the line as the unit, the number of reviews follows the spine and not the headings. The person chose the spine line over grouping short sections.
+- **A line's reviewer reads the sections its steps link and searches `paper.md` for the rest.** A reading of the whole paper for every line's review would cancel what the fewer reviews save. The person chose this.
+- **Only a line that changed is reviewed again.** A change to an earlier line is named as under review in the current line's review, as a section that showed the spine wrong was before, so it costs no review of its own. The person chose this.
+- **Reviews of lines are numbered in the order they are asked for, not by the line's place in the spine.** A change to the spine then never renames a review file. The person chose this.
 - **The author judges every issue against the paper.** A reviewer can be wrong, and an issue that is right about the paper can still add what the chain should not hold. The author takes a reviewer's correction and not its sentence: a suggested wording has carried an overstatement into a chain.
 - **Two rounds on an issue, then open.** Without a limit the loop need not end.
 - **Changes that touch most of the chain get a final review, not a second look.** A second look has no reading of the chain alone. A rewrite of a whole chain dropped hedges in a third of its steps and a second look found none of them.
@@ -30,6 +35,8 @@ For whoever changes the design. No agent of a run reads this file.
 ## Conversion
 
 - **LaTeX is kept as written.** The convert script puts included files in place, removes comments and adds an anchor to every paragraph and item. It does not translate the LaTeX and does not compute the numbers the compiled paper prints. Agents read LaTeX directly and cite the right places.
+- **Markdown is read with a parser library and kept as written.** Block parsing has many edge cases (code fences, setext headings, lists), and the person's rule is to use an existing implementation for something commonly built. Each block's text is taken from the file's own lines, as LaTeX is. Sections without numbers are numbered in order, because anchors made from Korean titles came out empty; the person chose `§1, §2` locations. An italic line right under an image is its caption, as in the person's drafts.
+- **An image whose path is a web address is downloaded during conversion.** The person chose this over reporting it, knowing that Codex's sandbox blocks the network. The project had no network use beyond the model provider before; conversion now has one. A failed download is a disagreement, so the person decides whether to go on.
 - **A PDF is transcribed by an agent, with the agent tool's own PDF reading.** Nothing is installed for PDF. The transcription is written to a file, although the transcriber has already read the paper, because the chain needs anchors to link and every later agent needs the same text.
 - **Figures and tables of a PDF are cut out as separate images.** A page image has too little resolution, and a transcription can garble a table with no sign of it in the text. The author and the reviewer check a table by looking.
 - **A disagreement in the conversion stops the run for the person.** After conversion no agent opens the paper itself, so what conversion lost is invisible to all of them.
@@ -41,7 +48,7 @@ For whoever changes the design. No agent of a run reads this file.
 ## Codex
 
 - **The Codex part is a second skill with the same agents and launch lines.** Codex starts an agent with the starter's whole conversation unless told not to, and the skill tells it not to at every start. `docs/codex.md` has the rest.
-- **A run in Codex takes LaTeX source only.** Codex has no tool that reads a PDF, and nothing is installed for PDF.
+- **A run in Codex takes LaTeX source or a Markdown file.** Codex has no tool that reads a PDF, and nothing is installed for PDF.
 
 ## The plugin
 
@@ -65,6 +72,6 @@ For whoever changes the design. No agent of a run reads this file.
 
 ## Open
 
-- Whether the spine should wait for the person's confirmation before the sections are written. Today the person is shown the spine and the run goes on.
+- Whether the spine should wait for the person's confirmation before the steps are written. Today the person is shown the spine and the run goes on.
 - How many papers one author can hold. Several papers in one chain are out of scope.
-- Whether a continued reviewer judges decisions on its own issues as well as a new one, and what it saves. To compare: one section review, then author's decisions with a sound rejection, an unsound rejection and a change that drops a hedge planted in them, given to a new second look and to the continued reviewer; count what each finds and the tokens each takes.
+- Whether a continued reviewer judges decisions on its own issues as well as a new one, and what it saves. To compare: one review of a spine line, then author's decisions with a sound rejection, an unsound rejection and a change that drops a hedge planted in them, given to a new second look and to the continued reviewer; count what each finds and the tokens each takes.

@@ -1,25 +1,29 @@
 """Convert a paper into `source/<input>/` of a workspace.
 
-`prompts/formats/source.md` defines the folder. The paper is LaTeX source or a PDF.
+`prompts/formats/source.md` defines the folder. The paper is LaTeX source, a Markdown
+file or a PDF.
 
-From LaTeX source, one command:
+From LaTeX source or a Markdown file, one command:
 
     uv run python scripts/convert.py <paper> <input> <workspace> [--support <folder>]
 
-Takes:    the paper, as a folder of LaTeX source or its main .tex file; the input's
-          name, such as yun2025; and the workspace path. `--support <folder>` names a
-          further folder in which files the paper includes are looked for, and may be
-          given more than once.
+Takes:    the paper, as a folder of LaTeX source or its main .tex file, or as a .md or
+          .markdown file or a folder that holds exactly one such file and no .tex file
+          with \\documentclass; the input's name, such as yun2025; and the workspace
+          path. `--support <folder>` names a further folder in which files the paper
+          includes, or images it shows, are looked for, and may be given more than once.
 Writes:   <workspace>/source/<input>/ with paper.md, paragraphs.md and figures/.
 Prints:   the number of sections, paragraphs, figures, tables, algorithms, equations,
           numbered statements and reference-list entries extracted, and every
           disagreement: a cross-reference or a citation that leads to no extracted item,
-          and an included file or a figure file that was not found.
+          an included file or a figure file that was not found, an image that could not
+          be made into a PNG, and an image on the web that could not be downloaded.
 Returns:  exit code 0 when there is no disagreement, 1 when there is one (the files
           are written all the same), 2 when the paper could not be converted.
 
-The LaTeX is read by a reader that returns a `paper_model.Paper`; the conversion works
-on that alone. The reader is `latex_reader`.
+The paper is read by a reader that returns a `paper_model.Paper`; the conversion works
+on that alone. The readers are `latex_reader` and `markdown_reader`. The Markdown reader
+downloads an image whose path is a URL, so a conversion from Markdown can use the network.
 
 From a PDF, three commands. The text of a PDF is not read by this script: an agent, the
 transcriber, writes `paper.md`, between the first command and the last.
@@ -60,6 +64,7 @@ import argparse
 import re
 import shutil
 import sys
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -87,16 +92,44 @@ def _is_pdf(paper: Path) -> bool:
     return paper.is_file() and paper.suffix.lower() == ".pdf"
 
 
-def read_paper(paper: Path, support: list[Path]) -> Paper:
-    """Pick the reader for this kind of input and return what it read."""
+def _markdown_file(paper: Path) -> Path | None:
+    """The Markdown file to read: `paper` itself, or the one Markdown file of a folder without a LaTeX main file.
+
+    None when the input is LaTeX source.
+    """
+    import latex_reader
+    import markdown_reader
+
+    if paper.is_file():
+        return paper if paper.suffix.lower() in markdown_reader.SUFFIXES else None
+    if latex_reader.main_files(paper):
+        return None
+    files = sorted(f for f in paper.iterdir() if f.is_file() and f.suffix.lower() in markdown_reader.SUFFIXES)
+    if len(files) != 1:
+        found = ", ".join(f.name for f in files) or "none"
+        raise ConversionError(f"{paper} must hold a .tex file with \\documentclass or exactly one Markdown file "
+                              f"(Markdown files found: {found}); give the file instead of the folder")
+    return files[0]
+
+
+def read_paper(paper: Path, support: list[Path], downloads: Path) -> Paper:
+    """Pick the reader for this kind of input and return what it read.
+
+    `downloads` is a folder for the images the Markdown reader downloads; it must last
+    until the files are written.
+    """
     if not paper.exists():
         raise ConversionError(f"no such file or folder: {paper}")
     if _is_pdf(paper):
         raise ConversionError("the text of a PDF is transcribed by an agent, not read by a reader")
+    markdown = _markdown_file(paper)
+    if markdown:
+        import markdown_reader
+        return markdown_reader.read(markdown, support, downloads)
     if paper.is_dir() or paper.suffix.lower() == ".tex":
         import latex_reader
         return latex_reader.read(paper, support)
-    raise ConversionError(f"not a folder of LaTeX source or a .tex file: {paper}")
+    raise ConversionError(f"not a folder of LaTeX source, a .tex file or a Markdown file: {paper}")
 
 
 # ---------------------------------------------------------------- places and anchors
@@ -189,7 +222,9 @@ def check(document: Paper) -> Report:
             report.paragraphs += 1
         elif isinstance(block, Item):
             report.items.append((block.kind, place.anchors[0]))
-            if block.kind == "figure" and not block.images:
+            if block.anchors[0] in document.problems:
+                report.disagreements.append(document.problems[block.anchors[0]])
+            elif block.kind == "figure" and not block.images:
                 report.disagreements.append(f"The figure {place.anchors[0]} has no image file, so no image was made.")
     lost: dict[str, int] = {}
     for reference in document.references:
@@ -249,25 +284,31 @@ def _anchor_lines(anchors: list[str]) -> str:
     return "".join(f'<a id="{anchor}"></a>\n' for anchor in anchors)
 
 
-def _with_items(parts: list, by_item: dict[int, Place], figures: Path, problems: list[str]) -> str:
-    """Text as written, with the anchors of each item inside it put on a line before the item."""
+def _with_items(parts: list, by_item: dict[int, Place], figures: Path, problems: list[str],
+                in_paragraph: bool = False) -> str:
+    """Text as written, with the anchors of each item inside it put on a line before the item.
+
+    In a paragraph an item's image line ends without a blank line, so the paragraph stays one block.
+    """
     text = ""
     for part in parts:
         if isinstance(part, Item):
-            text += ("" if not text or text.endswith("\n") else "\n") + _item_text(by_item[id(part)], by_item, figures, problems)
+            text += ("" if not text or text.endswith("\n") else "\n") + _item_text(
+                by_item[id(part)], by_item, figures, problems, in_paragraph)
         else:
             text += part
     return text
 
 
-def _item_text(place: Place, by_item: dict[int, Place], figures: Path, problems: list[str]) -> str:
+def _item_text(place: Place, by_item: dict[int, Place], figures: Path, problems: list[str],
+               in_paragraph: bool = False) -> str:
     item: Item = place.block
     text = _anchor_lines(place.anchors)
     for n, image in enumerate(item.images, start=1):
         file = re.sub(r"[^A-Za-z0-9._-]+", "-", place.anchors[0]) + (f"-{n}" if len(item.images) > 1 else "") + ".png"
         try:
             _render_figure(image, figures / file)
-            text += f"![figure {place.anchors[0]}](figures/{file})\n\n"
+            text += f"![figure {place.anchors[0]}](figures/{file})\n" + ("" if in_paragraph else "\n")
         except Exception as error:  # an image format that cannot be read
             problems.append(f"The figure file {image.name} could not be made into an image ({error}).")
     return text + _with_items(item.body, by_item, figures, problems)
@@ -285,7 +326,7 @@ def write_source(document: Paper, name: str, target: Path) -> list[str]:
     by_item = {id(row.block): row for row in rows if isinstance(row.block, Item)}
     paper = [f"# {document.title}"]
     if document.preamble:
-        paper.append("## Preamble\n\n```latex\n" + document.preamble + "\n```")
+        paper.append(f"## Preamble\n\n```{document.preamble_language}\n" + document.preamble + "\n```")
     index = [
         f"# Paragraph index of {name}\n",
         "One row for each paragraph of `paper.md`, with its location and its first words, and one row for "
@@ -306,7 +347,7 @@ def write_source(document: Paper, name: str, target: Path) -> list[str]:
         elif isinstance(block, RunIn):
             paper.append(_anchor_lines(row.anchors) + f"**{block.title}**")
         elif isinstance(block, Paragraph):
-            paper.append(_anchor_lines(row.anchors) + _with_items(block.parts, by_item, figures, problems))
+            paper.append(_anchor_lines(row.anchors) + _with_items(block.parts, by_item, figures, problems, True))
             index.append(f"- [{row.location}](paper.md#{row.anchors[0]}) {first_words(block.words)}".rstrip())
         else:
             paper.append(_anchor_lines(row.anchors) + block.text)
@@ -316,12 +357,13 @@ def write_source(document: Paper, name: str, target: Path) -> list[str]:
     return problems
 
 
-# ---------------------------------------------------------------- the whole conversion, from LaTeX source
+# ---------------------------------------------------------------- the whole conversion, from LaTeX source or Markdown
 
 def convert(paper: Path, name: str, workspace: Path, support=()) -> Conversion:
     """Read the paper, write `<workspace>/source/<name>/`, and report."""
-    document = read_paper(Path(paper), [Path(folder) for folder in support])
-    problems = write_source(document, name, Path(workspace) / "source" / name)
+    with tempfile.TemporaryDirectory() as downloads:
+        document = read_paper(Path(paper), [Path(folder) for folder in support], Path(downloads))
+        problems = write_source(document, name, Path(workspace) / "source" / name)
     report = check(document)
     report.disagreements += problems
     return Conversion(document, report)
@@ -474,16 +516,18 @@ def main(argv: list[str] | None = None) -> int:
     if argv[:1] == ["index"]:
         return _main_index(argv[1:])
     parser = argparse.ArgumentParser(
-        description="Convert a paper into source/<input>/ of a workspace. From LaTeX source this is the whole "
-                    "conversion. From a PDF it writes the page images, and `convert.py cut` and `convert.py index` "
-                    "do the rest once an agent has transcribed the text.",
+        description="Convert a paper into source/<input>/ of a workspace. From LaTeX source or a Markdown file "
+                    "this is the whole conversion. From a PDF it writes the page images, and `convert.py cut` and "
+                    "`convert.py index` do the rest once an agent has transcribed the text.",
         epilog="Exit code: 0 no disagreement, 1 a disagreement, 2 not converted.",
     )
-    parser.add_argument("paper", type=Path, help="a folder of LaTeX source, its main .tex file, or a PDF")
+    parser.add_argument("paper", type=Path,
+                        help="a folder of LaTeX source, its main .tex file, a Markdown file or its folder, or a PDF")
     parser.add_argument("input", help="the name of the input, such as yun2025")
     parser.add_argument("workspace", type=Path, help="the folder of the run")
     parser.add_argument("--support", type=Path, action="append", default=[], metavar="FOLDER",
-                        help="from LaTeX source: a further folder in which files the paper includes are looked for")
+                        help="from LaTeX source or Markdown: a further folder in which files the paper includes, "
+                             "or images it shows, are looked for")
     args = parser.parse_args(argv)
     target = args.workspace / "source" / args.input
     try:

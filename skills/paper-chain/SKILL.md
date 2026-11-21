@@ -1,6 +1,6 @@
 ---
 name: paper-chain
-description: Build the logical chain of one research paper, section by section, with a fresh reviewer after each section, a final review, and the person's feedback. Use when the person, or another skill this session is running, gives a paper (a folder of LaTeX source, or a PDF) and asks for its logical chain, or asks to go on with a run in an existing workspace.
+description: Build the logical chain of one research paper or blog post, one line of its spine at a time, with a fresh reviewer after each line, a final review, and the person's feedback. Use when the person, or another skill this session is running, gives a paper or a post (a folder of LaTeX source, a Markdown file, or a PDF) and asks for its logical chain, or asks to go on with a run in an existing workspace.
 ---
 
 # Paper chain
@@ -19,15 +19,15 @@ Every agent of a run is started on the model `opus` at the effort `high`: the au
 
 ## The starter
 
-You write nothing of the chain and read nothing of the paper. You start agents and pass messages.
+You write nothing of the chain and read nothing of the text. You start agents and pass messages.
 
-1. **The workspace.** The paper, the workspace, `<input>` and the chain language come from the person or from the instructions of the skill that asked for this one; ask the person only for what neither gave. The workspace is the folder named. If none is named, make `workspaces/<the paper's subject in full words>/` in the folder this session is open in, with the subject as given; ask if it was not. `<input>` is the first author's family name and the year, such as `lee2024`.
+1. **The workspace.** The paper, the workspace, `<input>` and the chain language come from the person or from the instructions of the skill that asked for this one; ask the person only for what neither gave. The workspace is the folder named. If none is named, make `workspaces/<the text's subject in full words>/` in the folder this session is open in, with the subject as given; ask if it was not. `<input>` is the first author's family name and the year, such as `lee2024`; for a text whose author is not named, a short word for it and the year, such as `post2026`.
 2. **Start the author** with the Agent tool as a new general-purpose agent, on the model and effort above, never as a fork. The prompt is these lines and nothing else, with absolute paths:
 
    ```
    Skill file: ${CLAUDE_SKILL_DIR}/SKILL.md
    Project folder: ${CLAUDE_PLUGIN_ROOT}
-   Paper: <the folder of LaTeX source, its main .tex file, or the PDF>
+   Paper: <the folder of LaTeX source, its main .tex file, the Markdown file, or the PDF>
    Input name: <input>
    Workspace: <workspace>
    Chain language: <the language asked for the chain in; leave this line out when none was asked for>
@@ -51,7 +51,7 @@ You write nothing of the chain and read nothing of the paper. You start agents a
    Source: <workspace>/source/<input>/
    ```
 
-   - Why the recorded line and not the author's reply: `prompts/roles/author.md` gives the author no reply on acceptance. Reading that one line is not reading the paper or the chain.
+   - Why the recorded line and not the author's reply: `prompts/roles/author.md` gives the author no reply on acceptance. Reading that one line is not reading the text or the chain.
 
 ## The author
 
@@ -59,13 +59,13 @@ You are the author of this run. The project folder is the one on your line `Proj
 
 **Running the scripts.** Run both from the project folder.
 
-Convert, once, before you read anything of the paper. A workspace that already has a `review-log.md` is a run to go on with: do not convert again.
+Convert, once, before you read anything of the text. A workspace that already has a `review-log.md` is a run to go on with: do not convert again.
 
 ```
-uv run python scripts/convert.py <folder of LaTeX source, or its main .tex file> <input> <workspace> [--support <folder>]
+uv run python scripts/convert.py <folder of LaTeX source, its main .tex file, or the Markdown file> <input> <workspace> [--support <folder>]
 ```
 
-`--support` names a second folder that holds files the main file includes, such as its figures, when they are not beside it.
+`--support` names a second folder that holds files the main file includes, such as its figures or a Markdown file's images, when they are not beside it.
 
 - Exit code 0: converted, no disagreement.
 - Exit code 1: converted, with one or more disagreements, each printed on a line. Stop, and have the person shown those lines and asked whether to go on. Read nothing in `source/` until they answer.
@@ -96,7 +96,7 @@ It writes `check-report.md` in the workspace. Exit code 0 is pass and 1 is fail.
 
 ```
 Reviewer role file: <project folder>/prompts/roles/reviewer.md
-Kind of review: <a spine review, a section review, a second look, or the final review>
+Kind of review: <a spine review, a review of a spine line, a second look, or the final review>
 Workspace: <workspace>
 Under review: <what is under review>
 Write your review to: <the review file>

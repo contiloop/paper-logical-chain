@@ -1,10 +1,11 @@
 [project]
 name = "paper-logical-chain"
 version = "0.1.0"
-description = "Builds a logical chain of a research paper, section by section, with a reviewer after each section"
+description = "Builds a logical chain of a research paper or blog post, one line of its spine at a time, with a reviewer after each line"
 requires-python = ">=3.12"
 license = "MIT"
 dependencies = [
+    "markdown-it-py>=4.3.0",
     "pillow>=10",
     "pypdfium2>=4.30",
 ]
